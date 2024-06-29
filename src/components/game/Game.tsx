@@ -88,7 +88,7 @@ function Game({playerInfo, playerCount}:GameProp){
         setIsTurn(playerInfo.type === santorini.current.getPlayerTurn())
 
         if(santorini.current.isGameOver()){
-            const winner = santorini.current.getWinner()
+            // const winner = santorini.current.getWinner()
             handleOpen();
             // toaster.push(<Message>{winner} has won the game!!! </Message>, {placement: 'topCenter'})
          
