@@ -1,0 +1,9 @@
+#root{
+    background-color:hsl(220, 75%, 50%);
+    height: 100%;
+    width:100%
+}
+
+*{
+    background-color:hsl(220, 75%, 50%);
+}
