@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import WaitingRoom from "./WaitingRoom"
 import GameBoard from "../game/GameBoard"
 import "./Home.css"
+import { useParams } from "react-router-dom"
 
 function Home() {
 
@@ -15,6 +16,7 @@ function Home() {
     const [join, setJoin] = useState<boolean>(false)
     const [start, setStart] = useState(false)
     const [playerCount, setPlayerCount] = useState(1)
+    const { paramRoomId } = useParams<{ paramRoomId: string}>()
 
     const createRoomId = () => {
         const possibleDigits ="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -59,11 +61,15 @@ function Home() {
 
     }
 
-    useEffect(() => {        
-        if(window.location.pathname !== "/"){
-            setRoomId(window.location.pathname.substring(1));
+    useEffect(() => {      
+        if(paramRoomId !== "/"){
+            setRoomId(paramRoomId)
             setJoin(true)
-        }
+        } 
+        // if(window.location.pathname !== "/"){
+        //     setRoomId(window.location.pathname.substring(1));
+        //     setJoin(true)
+        // }
     },[])
 
     if(start && playerInfo){
