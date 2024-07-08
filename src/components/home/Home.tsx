@@ -62,7 +62,7 @@ function Home() {
     }
 
     useEffect(() => {      
-        if(paramRoomId !== "/"){
+        if(paramRoomId){
             setRoomId(paramRoomId)
             setJoin(true)
         } 
