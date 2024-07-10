@@ -10,6 +10,7 @@ interface WaitingRoomProps{
     setPlayerInfo: (playerInfo: PlayerInfo) => void,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setPlayerCount:(count: any) => void,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setPlayers: (arg0: any) => void
 }
 
@@ -22,7 +23,8 @@ function WaitingRoom({playerInfo, setStart, setPlayerInfo, setPlayerCount, setPl
     socket.on('updatePlayer', (data) => {
         const updated = {name:playerInfo.name, roomId:playerInfo.roomId, type:data}
         setPlayerInfo(updated);
-        setPlayers(p => [...p, updated])        
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setPlayers((p: any) => [...p, updated])        
         setPlayersDisplay(p => [...p, <li key={uuidV4()}>{playerInfo.name} (you)</li> ])
     })
 
@@ -36,7 +38,8 @@ function WaitingRoom({playerInfo, setStart, setPlayerInfo, setPlayerCount, setPl
             otherPlayers.push(<li key={uuidV4()}>{p.name}</li>)
         })
         setPlayersDisplay(p => [...p,...otherPlayers])
-        setPlayers(p => [...p, ...data])     
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setPlayers((p: any) => [...p, ...data])     
         if(pCount > 0) setPlayerCount((c: number) => c + pCount)
     })
 
@@ -44,7 +47,8 @@ function WaitingRoom({playerInfo, setStart, setPlayerInfo, setPlayerCount, setPl
     socket.on('userJoined', data => {
         // console.log("userJoined", data)
         setPlayersDisplay(p=> [...p, <li key={uuidV4()}>{data.name}</li>])
-        setPlayers(p => [...p, data])      
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setPlayers((p: any) => [...p, data])      
         if(data.type !== "S") setPlayerCount((c: number) => c + 1)
         if(playerInfo.type === "X" && data.type !== "S") setReady(true)
     })
@@ -66,7 +70,8 @@ function WaitingRoom({playerInfo, setStart, setPlayerInfo, setPlayerCount, setPl
             if(playerInfo.type === "X"){
                 socket.emit('createRoom', playerInfo)
                 setPlayersDisplay([<li key={uuidV4()}>{playerInfo.name} (you)</li>])
-                setPlayers(p => [...p, playerInfo])      
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setPlayers((p: any) => [...p, playerInfo])      
             }
             else{
                 socket.emit('enterRoom', playerInfo)
