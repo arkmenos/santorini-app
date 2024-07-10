@@ -5,11 +5,10 @@ import { GameProp, START, Turn } from "../../types/Types"
 import { Button, Message, Modal, useToaster } from "rsuite"
 import { socket } from "../../socket/socket"
 import './Game.css'
-"rsuite/dist/rsuite-no-reset.min.css"
+import "rsuite/dist/rsuite-no-reset.min.css"
 import "rsuite/dist/rsuite.min.css";
 // import 'rsuite/useToaster/styles/index.css';
 // import 'rsuite/Message/styles/index.css'
-// import { Alert, Snackbar } from "@mui/material"
 
 function Game({playerInfo, playerCount}:GameProp){
     const santorini = useRef<Santorini>(null!)
@@ -53,7 +52,8 @@ function Game({playerInfo, playerCount}:GameProp){
         setSan(santorini.current.getSAN())
         if(santorini.current.isGameOver()){
             const winner = santorini.current.getWinner()
-            toaster.push(<Message>{winner} has won the game!!! </Message>, {placement: 'topCenter'})
+            // toaster.push(<Message type="warning" >{winner} has won the game!!! </Message>, {placement: 'topCenter'})
+            handleOpen();
             setIsTurn(false)
         }else if(playerInfo.type !== "S"){           
             setIsTurn(playerInfo.type === santorini.current.getPlayerTurn())
@@ -90,6 +90,7 @@ function Game({playerInfo, playerCount}:GameProp){
         if(santorini.current.isGameOver()){
             // const winner = santorini.current.getWinner()
             handleOpen();
+            return true;
             // toaster.push(<Message>{winner} has won the game!!! </Message>, {placement: 'topCenter'})
          
         }

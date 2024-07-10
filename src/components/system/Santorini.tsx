@@ -156,6 +156,7 @@ class Santorini {
     const tempTileData:TileData[] = JSON.parse(JSON.stringify(this.tileData))
     const tempWorkerPositionsMap = new Map(this.workerPositionsMap)
     const tempWorkerPositions = [...this.workerPositions];  
+    let workerDestination ;
 
     if(this.turnCount >= 5){    
       console.log("Player Turn ", this.playerTurn)
@@ -249,13 +250,15 @@ class Santorini {
               throw new Error(`Invalid move ${tempMove.worker} from ${tempMove.from} to ${tempMove.to}`);
               return null;
             } 
+            workerDestination = tempMove.to
             // console.log("Valid move")
-            if(fromBlockLevel === "M" && toBlockLevel === "S"){
-              console.log("Winning condition")
-              this.gameOverInd = true;
-              this.winner = tempMove.worker.toLocaleUpperCase() as Player
-              return turnObj;
-            }
+            // if(fromBlockLevel === "M" && toBlockLevel === "S"){
+            //   console.log("Winning condition")
+            //   this.gameOverInd = true;
+            //   this.winner = tempMove.worker.toLocaleUpperCase() as Player
+            //   ++this.turnCount;
+            //   return turnObj;
+            // }
           }
         }
         else{
@@ -282,6 +285,19 @@ class Santorini {
         }
         tempWorkerPositionsMap.set(tempMove.worker, tempMove.to)
         tempWorkerPositions.push(tempMove.to)
+        workerDestination= tempMove.to
+
+        if(tempMove.from && tempTileData[TILES.indexOf(tempMove.from)].buildings === "M" && 
+          tempTileData[TILES.indexOf(tempMove.to)].buildings === "S"){
+          console.log("Winning condition")
+          this.gameOverInd = true;
+          this.winner = tempMove.worker.toLocaleUpperCase() as Player
+          ++this.turnCount;
+          const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
+          this.load(newSAN)
+          this.turns.push(turnObj)
+          return turnObj;
+        }
 
       })
         // console.log("5")        
@@ -307,7 +323,7 @@ class Santorini {
       if( turnObj && (turnObj.buildings && turnObj.buildings?.length > 1)){
         throw new Error(`Invalid move notation: Cannot build multiple times`)
         return null;
-    } 
+      } 
       if(turnObj && turnObj.buildings && turnObj.buildings.length === 1){
         if(this.turnCount < 3){
           throw new Error(`Invalid notation: cannot build this turn`);
@@ -317,11 +333,20 @@ class Santorini {
         const tempSingleTileData = tempTileData[TILES.indexOf(tempBuilding.tile)]
         const destinationBlock = tempSingleTileData.buildings ? tempSingleTileData.buildings : "E" as Building
 
+        //Check if Building is adjacent to worker that moved
+        
+        if(workerDestination && 
+          !TILE_ADJACENCY[TILES.indexOf(workerDestination)].includes(TILES.indexOf(tempBuilding.tile))){
+            throw new Error(`Must build adjacent to worker that moved`)
+          }
+
+
         if(!VALID_BUILDS.get(destinationBlock)?.includes(tempBuilding.building) || tempSingleTileData.worker){
           // console.log(`Valid Builds worker`,VALID_BUILDS.get(destinationBlock), tempSingleTileData.worker)
           throw new Error(`Invalid build from ${destinationBlock} to ${turnObj.buildings[0].building}`);
           return null;
         }
+        
         tempTileData[TILES.indexOf(tempBuilding.tile)].buildings = tempBuilding.building
         
         // console.log("valid build")
