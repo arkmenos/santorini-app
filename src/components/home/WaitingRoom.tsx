@@ -10,21 +10,20 @@ interface WaitingRoomProps{
     setPlayerInfo: (playerInfo: PlayerInfo) => void,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setPlayerCount:(count: any) => void,
+    setPlayers: (arg0: any) => void
 }
 
-function WaitingRoom({playerInfo, setStart: setStart, setPlayerInfo, setPlayerCount}:WaitingRoomProps) {
+function WaitingRoom({playerInfo, setStart, setPlayerInfo, setPlayerCount, setPlayers}:WaitingRoomProps) {
     const [roomPath, ] = useState(window.location.origin + `/${playerInfo.roomId}`);
-    const [players, setPlayers] = useState<ReactElement[]>([])
+    const [playersDisplay, setPlayersDisplay] = useState<ReactElement[]>([])
     const [ready, setReady] = useState(false)
     
     socket.off('updatePlayer')
     socket.on('updatePlayer', (data) => {
         const updated = {name:playerInfo.name, roomId:playerInfo.roomId, type:data}
         setPlayerInfo(updated);
-        
-       
-        setPlayers(p => [...p, <li key={uuidV4()}>{playerInfo.name} (you)</li> ])
-
+        setPlayers(p => [...p, updated])        
+        setPlayersDisplay(p => [...p, <li key={uuidV4()}>{playerInfo.name} (you)</li> ])
     })
 
     socket.off('getUsersInRoom')
@@ -36,14 +35,16 @@ function WaitingRoom({playerInfo, setStart: setStart, setPlayerInfo, setPlayerCo
             if(p.type !== "S") pCount++
             otherPlayers.push(<li key={uuidV4()}>{p.name}</li>)
         })
-        setPlayers(p => [...p,...otherPlayers])
+        setPlayersDisplay(p => [...p,...otherPlayers])
+        setPlayers(p => [...p, ...data])     
         if(pCount > 0) setPlayerCount((c: number) => c + pCount)
     })
 
     socket.off('userJoined')
     socket.on('userJoined', data => {
         // console.log("userJoined", data)
-        setPlayers(p=> [...p, <li key={uuidV4()}>{data.name}</li>])
+        setPlayersDisplay(p=> [...p, <li key={uuidV4()}>{data.name}</li>])
+        setPlayers(p => [...p, data])      
         if(data.type !== "S") setPlayerCount((c: number) => c + 1)
         if(playerInfo.type === "X" && data.type !== "S") setReady(true)
     })
@@ -64,7 +65,8 @@ function WaitingRoom({playerInfo, setStart: setStart, setPlayerInfo, setPlayerCo
         const enterRoom = () => {
             if(playerInfo.type === "X"){
                 socket.emit('createRoom', playerInfo)
-                setPlayers([<li key={uuidV4()}>{playerInfo.name} (you)</li>])
+                setPlayersDisplay([<li key={uuidV4()}>{playerInfo.name} (you)</li>])
+                setPlayers(p => [...p, playerInfo])      
             }
             else{
                 socket.emit('enterRoom', playerInfo)
@@ -89,7 +91,7 @@ function WaitingRoom({playerInfo, setStart: setStart, setPlayerInfo, setPlayerCo
             <button className="create-btn" onClick={() => {navigator.clipboard.writeText(roomPath)}}>copy</button>
             <br/><br/>
             <div>
-                <ul className="player-list">{players}</ul>
+                <ul className="player-list">{playersDisplay}</ul>
                 {ready && <button className="start-btn" onClick={() => handleStartGame()}>Start Game</button>}
             </div>
         </div>

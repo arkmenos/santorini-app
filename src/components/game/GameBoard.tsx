@@ -2,11 +2,11 @@ import { GameProp } from "../../types/Types"
 import Game from "./Game"
 
 
-function GameBoard ({playerInfo, playerCount}:GameProp){
+function GameBoard ({playerInfo, playerCount, players}:GameProp){
 
     return(
         <>
-            <Game playerInfo={playerInfo} playerCount={playerCount} />
+            <Game playerInfo={playerInfo} playerCount={playerCount} players={players} />
         </>
     )
 }

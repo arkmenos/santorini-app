@@ -1,3 +1,10 @@
 .toaster-msg {
     background-color: rgb(218, 192, 45);
 }
+
+.turn-ind {
+    position:absolute;
+    top:10%;
+    left:5%;
+    font-size: larger;
+}
