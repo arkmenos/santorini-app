@@ -49,12 +49,12 @@ function Game({playerInfo, playerCount, players}:GameProp){
     //     (document.getElementById("san") as HTMLInputElement).value = "";
     // }
 
-    function getPlayerTurn():string {
-        const pturn = santorini.current.getPlayerTurn();
-        const foundPlayer = players.find(p => p.type === pturn)
-        if(!foundPlayer) return "";
-        return foundPlayer.name;
-    }
+    // function getPlayerTurn():string {
+    //     const pturn = santorini.current.getPlayerTurn();
+    //     const foundPlayer = players.find(p => p.type === pturn)
+    //     if(!foundPlayer) return "";
+    //     return foundPlayer.name;
+    // }
 
     function getWinner():string {
         if(!santorini.current) return ""
@@ -69,8 +69,7 @@ function Game({playerInfo, playerCount, players}:GameProp){
         santorini.current.turn(turn);
         setSan(santorini.current.getSAN())
         setCurrentPlayerTurn(santorini.current.getPlayerTurn());
-        if(santorini.current.isGameOver()){
-            const winner = santorini.current.getWinner()
+        if(santorini.current.isGameOver()){            
             // toaster.push(<Message type="warning" >{winner} has won the game!!! </Message>, {placement: 'topCenter'})
             handleOpen();
             setIsTurn(false)
