@@ -1,27 +1,30 @@
 import { useEffect, useRef, useState } from "react"
 import SantoriniBoard from "../board/SantoriniBoard"
 import Santorini from "../system/Santorini"
-import { GameProp, START, Turn } from "../../types/Types"
+import { GameProp, Player, START, Turn } from "../../types/Types"
 import { Button, Message, Modal, useToaster } from "rsuite"
 import { socket } from "../../socket/socket"
 import './Game.css'
 import "rsuite/dist/rsuite-no-reset.min.css"
 import "rsuite/dist/rsuite.min.css";
+import TurnIndicator from "./TurnIndicator"
 // import 'rsuite/useToaster/styles/index.css';
 // import 'rsuite/Message/styles/index.css'
 
-function Game({playerInfo, playerCount}:GameProp){
+function Game({playerInfo, playerCount, players}:GameProp){
     const santorini = useRef<Santorini>(null!)
     const [san, setSan] = useState("")
     const [isturn, setIsTurn] = useState(false)
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [currentPlayerTurn, setCurrentPlayerTurn] = useState<Player>("X")
     const toaster = useToaster()
 
     useEffect(() => {
         santorini.current = new Santorini(START, playerCount);
-        if(playerInfo.type === "X") setIsTurn(playerInfo.type === santorini.current.getPlayerTurn())
+        if(playerInfo.type === "X") setIsTurn(playerInfo.type === santorini.current.getPlayerTurn());
+        
     },[])
 
     // function updateMove(){
@@ -46,12 +49,27 @@ function Game({playerInfo, playerCount}:GameProp){
     //     (document.getElementById("san") as HTMLInputElement).value = "";
     // }
 
+    // function getPlayerTurn():string {
+    //     const pturn = santorini.current.getPlayerTurn();
+    //     const foundPlayer = players.find(p => p.type === pturn)
+    //     if(!foundPlayer) return "";
+    //     return foundPlayer.name;
+    // }
+
+    function getWinner():string {
+        if(!santorini.current) return ""
+        const pturn = santorini.current.getWinner();
+        const foundPlayer = players.find(p => p.type === pturn)
+        if(!foundPlayer) return "";
+        return foundPlayer.name;
+    }
+
     function opponentTurn(turn: Turn){
         // console.log("opponent Move", turn )
         santorini.current.turn(turn);
         setSan(santorini.current.getSAN())
-        if(santorini.current.isGameOver()){
-            const winner = santorini.current.getWinner()
+        setCurrentPlayerTurn(santorini.current.getPlayerTurn());
+        if(santorini.current.isGameOver()){            
             // toaster.push(<Message type="warning" >{winner} has won the game!!! </Message>, {placement: 'topCenter'})
             handleOpen();
             setIsTurn(false)
@@ -59,6 +77,7 @@ function Game({playerInfo, playerCount}:GameProp){
             setIsTurn(playerInfo.type === santorini.current.getPlayerTurn())
         }
     }
+
     socket.off('takeTurn')
     socket.on('takeTurn', turn => {
         opponentTurn(turn)
@@ -83,6 +102,7 @@ function Game({playerInfo, playerCount}:GameProp){
 
         if(newTurn === null) return false
         setSan(santorini.current.getSAN())
+        setCurrentPlayerTurn(santorini.current.getPlayerTurn());
         socket.emit('takeTurn', turn)
         socket.emit('boardState', santorini.current.getSAN())
         setIsTurn(playerInfo.type === santorini.current.getPlayerTurn())
@@ -108,12 +128,14 @@ function Game({playerInfo, playerCount}:GameProp){
                 <button onClick={() =>updateMove()}>Validate Turn</button><br/><br/>
                 <div>Updated SAN: {san}</div>
                 {winner.length > 0 && <div>{winner} WON!!!</div> }
-            </div> */}           
+            </div> */}
+            <TurnIndicator players={players} player={playerInfo} 
+                currentPlayerTurn={currentPlayerTurn} />
             <Modal open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Modal.Title>Game Over</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Player X is the Winner!!!!</Modal.Body>
+                <Modal.Body>{getWinner()} is the Winner!!!!</Modal.Body>
                 <Modal.Footer>
                     <Button onClick={handleClose} appearance="primary">Ok</Button>
                 </Modal.Footer>

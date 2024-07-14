@@ -16,6 +16,7 @@ function Home() {
     const [join, setJoin] = useState<boolean>(false)
     const [start, setStart] = useState(false)
     const [playerCount, setPlayerCount] = useState(1)
+    const [players, setPlayers] = useState<PlayerInfo[]>([])
     const { paramRoomId } = useParams<{ paramRoomId: string}>()
 
     const createRoomId = () => {
@@ -73,10 +74,10 @@ function Home() {
     },[])
 
     if(start && playerInfo){
-        return <GameBoard playerInfo={playerInfo} playerCount={playerCount}/>
+        return <GameBoard playerInfo={playerInfo} playerCount={playerCount} players={players}/>
     }else if(playerInfo){
         return <WaitingRoom playerInfo={playerInfo} setStart={setStart} 
-            setPlayerInfo={setPlayerInfo} setPlayerCount={setPlayerCount}/>
+            setPlayerInfo={setPlayerInfo} setPlayerCount={setPlayerCount} setPlayers={setPlayers}/>
     }
     else{    
         if(join){

@@ -76,6 +76,7 @@ export interface PlayerInfo {
 export interface GameProp{
     playerInfo:PlayerInfo,
     playerCount:number,
+    players: PlayerInfo[],
 }
 
 export const TILE_ADJACENCY: number[][] = new Array<number[]>();
