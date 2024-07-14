@@ -64,7 +64,6 @@ function Game({playerInfo, playerCount, players}:GameProp){
         return foundPlayer.name;
     }
 
-
     function opponentTurn(turn: Turn){
         // console.log("opponent Move", turn )
         santorini.current.takeTurn(turn);
