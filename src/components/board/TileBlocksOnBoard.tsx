@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import Large from "../blocks/Large"
-import { DOME_Y_POS, L_BLOCK_Y_POS, M_BLOCK_Y_POS, POSITIONS, S_BLOCK_Y_POS, Tile, TileData, TileDataUpdator, TILES, VALID_BUILDS } from "../../types/Types"
+import { Build, DOME_Y_POS, L_BLOCK_Y_POS, M_BLOCK_Y_POS, POSITIONS, S_BLOCK_Y_POS, Tile, TileData, TileDataUpdator, TILES, VALID_BUILDS } from "../../types/Types"
 import Medium from "../blocks/Medium";
 import Small from "../blocks/Small";
 import Dome from "../blocks/Dome";
 import TileBlock from "./TileBlock";
-import { addCurrentBuild, clearIndicators, clearWorkerSelected, setCanBuild, updateTileData } from "../../feature/boardstate-slice";
+import { addCurrentGameAction, clearIndicators, clearWorkerSelected, setCanBuild, updateTileData } from "../../feature/boardstate-slice";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { ThreeEvent } from "@react-three/fiber";
@@ -80,8 +80,8 @@ function TileBlocksOnBoard(){
                     const updater:TileDataUpdator ={index:TILES.indexOf(tile), data:newTileData} 
                     // console.log("build here: ", tempTile, updater)
                     dispatch(updateTileData(updater))
-                    if (newTileData.buildings) dispatch(addCurrentBuild(
-                        {building: newTileData.buildings, tile: tile as Tile}))
+                    if (newTileData.buildings) dispatch(addCurrentGameAction((
+                        {building: newTileData.buildings, tile: tile as Tile}) as Build))
 
                 }
             }

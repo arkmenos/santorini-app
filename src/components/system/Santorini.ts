@@ -1,28 +1,8 @@
-import {
-  START,
-  Worker,
-  WORKERS,
-  BLOCKS,
-  DOMES,
-  TILES,
-  Tile,
-  MAX_DOMES,
-  MAX_L_BLOCKS,
-  MAX_M_BLOCKS,
-  MAX_S_BLOCKS,
-  TileData,
-  Block,
-  Turn,
-  Move,
-  Building,
-  Dome,
-  Build,
-  TILE_ADJACENCY,
-  VALID_MOVEMENTS,
-  VALID_BUILDS,
-  Player,
-  PLAYERS,
-} from "../../types/Types";
+import {  START,  Worker,  WORKERS,  BLOCKS,  DOMES,  TILES,  Tile,  MAX_DOMES,  MAX_L_BLOCKS,
+  MAX_M_BLOCKS,  MAX_S_BLOCKS,  TileData,  Block,  Turn,  Move,  Building,  Build,
+  TILE_ADJACENCY,  VALID_MOVEMENTS,  Player,  PLAYERS,
+  } from "../../types/Types";
+import Mortal from "./Mortal";
 
 class Santorini {
   private notation: string;
@@ -47,7 +27,8 @@ class Santorini {
   private gameOverInd:boolean = false;
   private winner:Player | undefined;
   private players: Player[] = ['X','Y']
-  private turns: Turn[] =[]
+  private turns: Turn[] = []
+  private playerPowers: Mortal[] = []
 
 
   constructor(notation?: string, playerCount?: number) {
@@ -141,22 +122,12 @@ class Santorini {
       
   }
 
-  public turn(turn:string | Turn): Turn | null{
-    let turnObj;
-    console.log("Take turn", turn)
-    if(typeof turn === "string"){
-      turnObj = this.createTurn(turn);      
-    }else {
-      turnObj = turn;
-    }
-    // console.log("In Turn count: ", this.turnCount)
-
-    if(!turnObj) return null;
+  public takeTurn(turn: Turn): Turn | null {
+    if(turn === null) return null
 
     const tempTileData:TileData[] = JSON.parse(JSON.stringify(this.tileData))
     const tempWorkerPositionsMap = new Map(this.workerPositionsMap)
     const tempWorkerPositions = [...this.workerPositions];  
-    let workerDestination ;
 
     if(this.turnCount >= 5){    
       console.log("Player Turn ", this.playerTurn)
@@ -170,7 +141,7 @@ class Santorini {
         if(this.players.length === 2){
           this.gameOverInd = true
           this.winner = opponents[0]
-          return turnObj
+          return turn
           // throw new Error(`Player ${playerNum} cannot move. Player ${opponents[0].charCodeAt(0) - 87} wins`)
         }
         else if(this.playerCount === 3){
@@ -190,92 +161,19 @@ class Santorini {
           this.load(newSAN)
           // console.log("Turn incremented: ", this.turnCount)
           // throw new Error(`Player ${playerNum} cannot move and has been removed from the game`)
-          this.turns.push(turnObj)
-          return turnObj;
-        }
-        
+          this.turns.push(turn)
+          return turn;
+        }        
       }
     }
- 
 
-
-    if(turnObj &&  turnObj.moves){
-      if(this.turnCount <= 2 || (this.turnCount ===3 && this.playerCount ===3)){
-        if(turnObj.moves.length !== 2){
-          console.log("Debug: turn count ",this.turnCount )
-          throw new Error(`Invalid turn: Must place 2 workers`)
-          return null;
-        }
-      }else{
-        if(turnObj.moves.length > 1){
-          throw new Error(`Invalid turn: Cannot move multiple times`)
-          return null;
-        }else if(turnObj.moves.length === 0){
-          throw new Error(`Invalid turn: Worker must move a space`)
-          return null;
-        }
-      } 
-    }
-
-       
-    //Validate move 
-      const workersToMove: Worker[] = []
-      turnObj.moves && turnObj.moves.forEach((tempMove) =>{
-        if(workersToMove.includes(tempMove.worker)){
-          throw new Error(`Invalid move: cannot move ${tempMove.worker} multiple times`);
-            return null;
-        }
-        workersToMove.push(tempMove.worker)
-      
-        if(this.playerTurn !== tempMove.worker.toLocaleUpperCase()){
-          throw new Error(`Invalid move: cannot move ${tempMove.worker} on ${this.playerTurn}'s turn`);
-            return null;
-        }
-        if(tempMove.from){
-          if(!TILE_ADJACENCY[TILES.indexOf(tempMove.from)].includes(TILES.indexOf(tempMove.to))){
-            throw new Error(`Invalid move from ${tempMove.from} to ${tempMove.to}`);
-            return null;
-          }
-          else{              
-            //Tile level check
-            const tempFromTile = tempTileData[TILES.indexOf(tempMove.from)]
-            const tempToTile = tempTileData[TILES.indexOf(tempMove.to)]
-            const fromBlockLevel = tempFromTile.buildings ? tempFromTile.buildings : "E" as Building
-            const toBlockLevel = tempToTile.buildings ? tempToTile.buildings  : 'E' as Building
-
-            // console.log("Temp Data Tiles : ", tempTileData, tempFromTile, tempToTile)
-            // console.log("fromBlockLevel toBlockLevel", fromBlockLevel, toBlockLevel)
-            if(!VALID_MOVEMENTS.get(fromBlockLevel)?.includes(toBlockLevel) || tempToTile.worker){
-              console.log("VALID_MOVEMENTS: ", fromBlockLevel, VALID_MOVEMENTS.get(fromBlockLevel))
-              throw new Error(`Invalid move ${tempMove.worker} from ${tempMove.from} to ${tempMove.to}`);
-              return null;
-            } 
-            workerDestination = tempMove.to
-            // console.log("Valid move")
-            // if(fromBlockLevel === "M" && toBlockLevel === "S"){
-            //   console.log("Winning condition")
-            //   this.gameOverInd = true;
-            //   this.winner = tempMove.worker.toLocaleUpperCase() as Player
-            //   ++this.turnCount;
-            //   return turnObj;
-            // }
-          }
-        }
-        else{
-          //move worker onto the board. Check for empty tile for now
-          // console.log("Placing workers")
-          const tileToPlaceWorker = tempTileData[TILES.indexOf(tempMove.to)]
-          if(tileToPlaceWorker){
-            if((tileToPlaceWorker.buildings && tileToPlaceWorker.buildings !== "E") ||
-              tileToPlaceWorker.worker || tempWorkerPositions.includes(tempMove.to)){
-                throw new Error(`Invalid worker placement to ${tempMove.to}`);
-                return null;
-            }
-          }
-          
-        }
-        //update tempTileData and tempWorkerPositionsMap
-        // console.log(`Move ${tempMove.worker} to ${tempMove.to} index ${TILES.indexOf(tempMove.to)}`)
+    if(this.playerPowers.length === 1){
+      const mortal = this.playerPowers[0];
+      mortal.validateActions(turn, this.turnCount, this.playerCount)
+      mortal.validateMoveActions(turn, this.playerTurn,tempTileData)
+      //update tempTileData and tempWorkerPositionsMap
+      const tempMove = turn.gameActions[0] as Move
+      console.log(`Move ${tempMove.worker} to ${tempMove.to} index ${TILES.indexOf(tempMove.to)}`)
         tempTileData[TILES.indexOf(tempMove.to)].worker = tempMove.worker
         if(tempMove.from) {
           if(!tempTileData[TILES.indexOf(tempMove.from)].buildings){
@@ -285,84 +183,286 @@ class Santorini {
         }
         tempWorkerPositionsMap.set(tempMove.worker, tempMove.to)
         tempWorkerPositions.push(tempMove.to)
-        workerDestination= tempMove.to
+        // workerDestination= tempMove.to
 
-        if(tempMove.from && tempTileData[TILES.indexOf(tempMove.from)].buildings === "M" && 
-          tempTileData[TILES.indexOf(tempMove.to)].buildings === "S"){
+        //Check primary win condition
+        if((tempMove.from && tempTileData[TILES.indexOf(tempMove.from)].buildings === "M" && 
+          tempTileData[TILES.indexOf(tempMove.to)].buildings === "S") 
+            || mortal.isSecondaryWinConditionMet(turn)){
           console.log("Winning condition")
           this.gameOverInd = true;
           this.winner = tempMove.worker.toLocaleUpperCase() as Player
           ++this.turnCount;
           const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
           this.load(newSAN)
-          this.turns.push(turnObj)
-          return turnObj;
+          this.turns.push(turn)
+          return turn;
         }
 
-      })
-        // console.log("5")        
+      mortal.validateBuildActions(turn, tempTileData)
+      if(this.turnCount <=2 || (this.turnCount === 3 && this.playerCount ===3))
+      {
+        const tempSecondMove = turn.gameActions[1] as Move
+        console.log(`Move ${tempSecondMove.worker} to ${tempSecondMove.to} index ${TILES.indexOf(tempSecondMove.to)}`)
+        tempTileData[TILES.indexOf(tempSecondMove.to)].worker = tempSecondMove.worker
+        if(tempSecondMove.from) {
+          if(!tempTileData[TILES.indexOf(tempSecondMove.from)].buildings){
+            tempTileData[TILES.indexOf(tempSecondMove.from)].buildings = "E"
+          }
+          delete tempTileData[TILES.indexOf(tempSecondMove.from)].worker
+        }
+        tempWorkerPositionsMap.set(tempSecondMove.worker, tempSecondMove.to)
+        tempWorkerPositions.push(tempSecondMove.to)
+      }
+      else{      
+        const tempBuilding = turn.gameActions[1] as Build
+        console.log('Update tiledata for building ', tempBuilding)
+        console.log('Updated tiledata for building ', tempBuilding, tempTileData[TILES.indexOf(tempBuilding.tile)], tempTileData, TILES.indexOf(tempBuilding.tile))
+        if(tempBuilding.building){
+          tempTileData[TILES.indexOf(tempBuilding.tile)].buildings = tempBuilding.building
+        }
+        console.log('Updated tiledata for building ', tempBuilding, tempTileData[TILES.indexOf(tempBuilding.tile)])
+      } 
+      if(mortal.isSecondaryWinConditionMet(turn)){
+        console.log("Winning condition")
+          this.gameOverInd = true;
+          this.winner = tempMove.worker.toLocaleUpperCase() as Player
+      }
+      //Take turn and update SAN
+      // console.log("Valid Turn")
+      // console.log("Turn end",tempWorkerPositionsMap, tempTileData)
+      ++this.turnCount;
+      const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
+      this.load(newSAN)
+      // console.log("Turn incremented: ", this.turnCount)
+      this.turns.push(turn)
+    }
+
+    return turn;
+  }
+
+  // public takeTurn_old(turn:string | Turn): Turn | null{
+  //   let turnObj;
+  //   console.log("Take turn", turn)
+  //   if(typeof turn === "string"){
+  //     turnObj = this.createTurn(turn);      
+  //   }else {
+  //     turnObj = turn;
+  //   }
+  //   // console.log("In Turn count: ", this.turnCount)
+
+  //   if(!turnObj) return null;
+
+  //   const tempTileData:TileData[] = JSON.parse(JSON.stringify(this.tileData))
+  //   const tempWorkerPositionsMap = new Map(this.workerPositionsMap)
+  //   const tempWorkerPositions = [...this.workerPositions];  
+  //   let workerDestination ;
+
+  //   if(this.turnCount >= 5){    
+  //     console.log("Player Turn ", this.playerTurn)
+  //     if(this.isTurnPossible()){
+  //       console.log("YES TURN is POSSIBLE")
+  //     }else {
+  //       const playerNum = this.playerTurn.charCodeAt(0) - 87
+  //       const opponents = [...this.players].filter( p => p !== this.playerTurn)
+  //       console.log("NO, TURN NOT POSSIBLE")
+  //       console.log("playerNum: ",playerNum, opponents)
+  //       if(this.players.length === 2){
+  //         this.gameOverInd = true
+  //         this.winner = opponents[0]
+  //         return turnObj
+  //         // throw new Error(`Player ${playerNum} cannot move. Player ${opponents[0].charCodeAt(0) - 87} wins`)
+  //       }
+  //       else if(this.playerCount === 3){
+  //         console.log("Remove the player")
+  //         this.players.filter( p => p !== this.playerTurn)
+  //         ++this.turnCount;
+  //         tempTileData.forEach(ttd => {
+  //           if(ttd.worker && this.playerTurn === ttd.worker.toUpperCase()) {
+  //             ttd.worker = undefined
+  //             if(!ttd.buildings) ttd.buildings = "E"
+  //           }
+  //         })
+  //         tempWorkerPositionsMap.delete(this.playerTurn)
+  //         tempWorkerPositionsMap.delete(this.playerTurn.toLowerCase() as Worker)
+  //         console.log("Update tile after removing player ", tempTileData, tempWorkerPositionsMap)
+  //         const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
+  //         this.load(newSAN)
+  //         // console.log("Turn incremented: ", this.turnCount)
+  //         // throw new Error(`Player ${playerNum} cannot move and has been removed from the game`)
+  //         this.turns.push(turnObj)
+  //         return turnObj;
+  //       }        
+  //     }
+  //   }
+ 
+
+
+  //   if(turnObj &&  turnObj.moves){
+  //     if(this.turnCount <= 2 || (this.turnCount ===3 && this.playerCount ===3)){
+  //       if(turnObj.moves.length !== 2){
+  //         console.log("Debug: turn count ",this.turnCount )
+  //         throw new Error(`Invalid turn: Must place 2 workers`)
+  //         return null;
+  //       }
+  //     }else{
+  //       if(turnObj.moves.length > 1){
+  //         throw new Error(`Invalid turn: Cannot move multiple times`)
+  //         return null;
+  //       }else if(turnObj.moves.length === 0){
+  //         throw new Error(`Invalid turn: Worker must move a space`)
+  //         return null;
+  //       }
+  //     } 
+  //   }
+
+       
+  //   //Validate move 
+  //     const workersToMove: Worker[] = []
+  //     turnObj.moves && turnObj.moves.forEach((tempMove) =>{
+  //       if(workersToMove.includes(tempMove.worker)){
+  //         throw new Error(`Invalid move: cannot move ${tempMove.worker} multiple times`);
+  //           return null;
+  //       }
+  //       workersToMove.push(tempMove.worker)
+      
+  //       if(this.playerTurn !== tempMove.worker.toLocaleUpperCase()){
+  //         throw new Error(`Invalid move: cannot move ${tempMove.worker} on ${this.playerTurn}'s turn`);
+  //           return null;
+  //       }
+  //       if(tempMove.from){
+  //         if(!TILE_ADJACENCY[TILES.indexOf(tempMove.from)].includes(TILES.indexOf(tempMove.to))){
+  //           throw new Error(`Invalid move from ${tempMove.from} to ${tempMove.to}`);
+  //           return null;
+  //         }
+  //         else{              
+  //           //Tile level check
+  //           const tempFromTile = tempTileData[TILES.indexOf(tempMove.from)]
+  //           const tempToTile = tempTileData[TILES.indexOf(tempMove.to)]
+  //           const fromBlockLevel = tempFromTile.buildings ? tempFromTile.buildings : "E" as Building
+  //           const toBlockLevel = tempToTile.buildings ? tempToTile.buildings  : 'E' as Building
+
+  //           // console.log("Temp Data Tiles : ", tempTileData, tempFromTile, tempToTile)
+  //           // console.log("fromBlockLevel toBlockLevel", fromBlockLevel, toBlockLevel)
+  //           if(!VALID_MOVEMENTS.get(fromBlockLevel)?.includes(toBlockLevel) || tempToTile.worker){
+  //             console.log("VALID_MOVEMENTS: ", fromBlockLevel, VALID_MOVEMENTS.get(fromBlockLevel))
+  //             throw new Error(`Invalid move ${tempMove.worker} from ${tempMove.from} to ${tempMove.to}`);
+  //             return null;
+  //           } 
+  //           workerDestination = tempMove.to
+  //           // console.log("Valid move")
+  //           // if(fromBlockLevel === "M" && toBlockLevel === "S"){
+  //           //   console.log("Winning condition")
+  //           //   this.gameOverInd = true;
+  //           //   this.winner = tempMove.worker.toLocaleUpperCase() as Player
+  //           //   ++this.turnCount;
+  //           //   return turnObj;
+  //           // }
+  //         }
+  //       }
+  //       else{
+  //         //move worker onto the board. Check for empty tile for now
+  //         // console.log("Placing workers")
+  //         const tileToPlaceWorker = tempTileData[TILES.indexOf(tempMove.to)]
+  //         if(tileToPlaceWorker){
+  //           if((tileToPlaceWorker.buildings && tileToPlaceWorker.buildings !== "E") ||
+  //             tileToPlaceWorker.worker || tempWorkerPositions.includes(tempMove.to)){
+  //               throw new Error(`Invalid worker placement to ${tempMove.to}`);
+  //               return null;
+  //           }
+  //         }
+          
+  //       }
+  //       //update tempTileData and tempWorkerPositionsMap
+  //       // console.log(`Move ${tempMove.worker} to ${tempMove.to} index ${TILES.indexOf(tempMove.to)}`)
+  //       tempTileData[TILES.indexOf(tempMove.to)].worker = tempMove.worker
+  //       if(tempMove.from) {
+  //         if(!tempTileData[TILES.indexOf(tempMove.from)].buildings){
+  //           tempTileData[TILES.indexOf(tempMove.from)].buildings = "E"
+  //         }
+  //         delete tempTileData[TILES.indexOf(tempMove.from)].worker
+  //       }
+  //       tempWorkerPositionsMap.set(tempMove.worker, tempMove.to)
+  //       tempWorkerPositions.push(tempMove.to)
+  //       workerDestination= tempMove.to
+
+  //       //Check primary win condition
+  //       if(tempMove.from && tempTileData[TILES.indexOf(tempMove.from)].buildings === "M" && 
+  //         tempTileData[TILES.indexOf(tempMove.to)].buildings === "S"){
+  //         console.log("Winning condition")
+  //         this.gameOverInd = true;
+  //         this.winner = tempMove.worker.toLocaleUpperCase() as Player
+  //         ++this.turnCount;
+  //         const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
+  //         this.load(newSAN)
+  //         this.turns.push(turnObj)
+  //         return turnObj;
+  //       }
+
+  //     })
+  //       // console.log("5")        
       
 
-      //validate building
-      if(turnObj &&  turnObj.buildings){
-        if(this.turnCount <= 2 || (this.turnCount ===3 && this.playerCount ===3)){
-          if(turnObj.buildings.length !== 0){
-            throw new Error(`Invalid turn: Cannot build duing worker placement phase`)
-            return null;
-          }
-        }else{
-          if(turnObj.buildings.length > 1){
-            throw new Error(`Invalid turn: Cannot build multiple times`)
-            return null;
-          }else if(turnObj.buildings.length === 0 && !this.gameOverInd){
-            throw new Error(`Invalid turn: Worker must build `)
-            return null;
-          }
-        } 
-      }
-      if( turnObj && (turnObj.buildings && turnObj.buildings?.length > 1)){
-        throw new Error(`Invalid move notation: Cannot build multiple times`)
-        return null;
-      } 
-      if(turnObj && turnObj.buildings && turnObj.buildings.length === 1){
-        if(this.turnCount < 3){
-          throw new Error(`Invalid notation: cannot build this turn`);
-          return null;
-        }
-        const tempBuilding = turnObj.buildings[0];
-        const tempSingleTileData = tempTileData[TILES.indexOf(tempBuilding.tile)]
-        const destinationBlock = tempSingleTileData.buildings ? tempSingleTileData.buildings : "E" as Building
+  //     //validate building
+  //     if(turnObj &&  turnObj.buildings){
+  //       if(this.turnCount <= 2 || (this.turnCount ===3 && this.playerCount ===3)){
+  //         if(turnObj.buildings.length !== 0){
+  //           throw new Error(`Invalid turn: Cannot build duing worker placement phase`)
+  //           return null;
+  //         }
+  //       }else{
+  //         if(turnObj.buildings.length > 1){
+  //           throw new Error(`Invalid turn: Cannot build multiple times`)
+  //           return null;
+  //         }else if(turnObj.buildings.length === 0 && !this.gameOverInd){
+  //           throw new Error(`Invalid turn: Worker must build `)
+  //           return null;
+  //         }
+  //       } 
+  //     }
+  //     if( turnObj && (turnObj.buildings && turnObj.buildings?.length > 1)){
+  //       throw new Error(`Invalid move notation: Cannot build multiple times`)
+  //       return null;
+  //     } 
+  //     if(turnObj && turnObj.buildings && turnObj.buildings.length === 1){
+  //       if(this.turnCount < 3){
+  //         throw new Error(`Invalid notation: cannot build this turn`);
+  //         return null;
+  //       }
+  //       const tempBuilding = turnObj.buildings[0];
+  //       const tempSingleTileData = tempTileData[TILES.indexOf(tempBuilding.tile)]
+  //       const destinationBlock = tempSingleTileData.buildings ? tempSingleTileData.buildings : "E" as Building
 
-        //Check if Building is adjacent to worker that moved
+  //       //Check if Building is adjacent to worker that moved
         
-        if(workerDestination && 
-          !TILE_ADJACENCY[TILES.indexOf(workerDestination)].includes(TILES.indexOf(tempBuilding.tile))){
-            throw new Error(`Must build adjacent to worker that moved`)
-          }
+  //       if(workerDestination && 
+  //         !TILE_ADJACENCY[TILES.indexOf(workerDestination)].includes(TILES.indexOf(tempBuilding.tile))){
+  //           throw new Error(`Must build adjacent to worker that moved`)
+  //         }
 
 
-        if(!VALID_BUILDS.get(destinationBlock)?.includes(tempBuilding.building) || tempSingleTileData.worker){
-          // console.log(`Valid Builds worker`,VALID_BUILDS.get(destinationBlock), tempSingleTileData.worker)
-          throw new Error(`Invalid build from ${destinationBlock} to ${turnObj.buildings[0].building}`);
-          return null;
-        }
+  //       if(!VALID_BUILDS.get(destinationBlock)?.includes(tempBuilding.building) || tempSingleTileData.worker){
+  //         // console.log(`Valid Builds worker`,VALID_BUILDS.get(destinationBlock), tempSingleTileData.worker)
+  //         throw new Error(`Invalid build from ${destinationBlock} to ${turnObj.buildings[0].building}`);
+  //         return null;
+  //       }
         
-        tempTileData[TILES.indexOf(tempBuilding.tile)].buildings = tempBuilding.building
+  //       tempTileData[TILES.indexOf(tempBuilding.tile)].buildings = tempBuilding.building
         
-        // console.log("valid build")
-      }
-    // }
+  //       // console.log("valid build")
+  //     }
+  //   // }
 
-    //Take turn and update SAN
-    // console.log("Valid Turn")
-    // console.log("Turn end",tempWorkerPositionsMap, tempTileData)
-    ++this.turnCount;
-    const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
-    this.load(newSAN)
-    // console.log("Turn incremented: ", this.turnCount)
-    this.turns.push(turnObj)
-    return turnObj;
-  }
+  //   //Take turn and update SAN
+  //   // console.log("Valid Turn")
+  //   // console.log("Turn end",tempWorkerPositionsMap, tempTileData)
+  //   ++this.turnCount;
+  //   const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
+  //   this.load(newSAN)
+  //   // console.log("Turn incremented: ", this.turnCount)
+  //   this.turns.push(turnObj)
+  //   return turnObj;
+  // }
 
   private createNewSAN(data: TileData[], newWorkerPositionsMap:Map<Worker, Tile>): string{
     let result = ""
@@ -454,66 +554,66 @@ class Santorini {
     return result;
   }
 
-  private createTurn(turn: string): Turn | null {
-    const turnParts = turn.trim().split(/\s+/);
-    if(turnParts.length !== 2){
-      throw new Error(`Invalid move notation`)
-      return null;
-    }
-    const moves = turnParts[0].split('/')
-    const buildings = turnParts[1].split('/')
-    // if((moves.length > 1 && (this.turnCount > 2 || (this.turnCount > 3 && this.playerCount === 3))) || buildings.length > 1){
-    //   throw new Error(`Invalid move notation: Cannot have multiple moves or builds`)
-    //   return null;
-    // }else 
-    if((this.turnCount === 1 || this.turnCount === 2) && moves.length !== 2 && buildings.length !== 0){
-      throw new Error(`Invalid move notation: Must place 2 worker on this turn`)
-    }else if(this.turnCount === 3 && this.playerCount === 3 && moves.length !== 2 && buildings.length !== 0){
-      throw new Error(`Invalid move notation: Must place 2 worker on this turn`)
-    }
+  // private createTurn(turn: string): Turn | null {
+  //   const turnParts = turn.trim().split(/\s+/);
+  //   if(turnParts.length !== 2){
+  //     throw new Error(`Invalid move notation`)
+  //     return null;
+  //   }
+  //   const moves = turnParts[0].split('/')
+  //   const buildings = turnParts[1].split('/')
+  //   // if((moves.length > 1 && (this.turnCount > 2 || (this.turnCount > 3 && this.playerCount === 3))) || buildings.length > 1){
+  //   //   throw new Error(`Invalid move notation: Cannot have multiple moves or builds`)
+  //   //   return null;
+  //   // }else 
+  //   if((this.turnCount === 1 || this.turnCount === 2) && moves.length !== 2 && buildings.length !== 0){
+  //     throw new Error(`Invalid move notation: Must place 2 worker on this turn`)
+  //   }else if(this.turnCount === 3 && this.playerCount === 3 && moves.length !== 2 && buildings.length !== 0){
+  //     throw new Error(`Invalid move notation: Must place 2 worker on this turn`)
+  //   }
 
 
-    const result :Turn = {moves:[], buildings:[]}
+  //   const result :Turn = {moves:[], buildings:[]}
     
-    moves.forEach(move => {
-      if(!WORKERS.includes(move[0]) || !TILES.includes(move.substring(1))){
-        // console.log("Worker and tile", move[0], move.substring(1))
-        throw new Error(`Invalid move notation: ${move}`)
-        return null;
-      }
-      const worker = move[0] as Worker
-      const to = move.substring(1) as Tile
-      const from = this.workerPositionsMap.get(move[0] as Worker) as Tile
-      const tempMove:Move = {from, to, worker}
-      result.moves?.push(tempMove)
-    })
+  //   moves.forEach(move => {
+  //     if(!WORKERS.includes(move[0]) || !TILES.includes(move.substring(1))){
+  //       // console.log("Worker and tile", move[0], move.substring(1))
+  //       throw new Error(`Invalid move notation: ${move}`)
+  //       return null;
+  //     }
+  //     const worker = move[0] as Worker
+  //     const to = move.substring(1) as Tile
+  //     const from = this.workerPositionsMap.get(move[0] as Worker) as Tile
+  //     const tempMove:Move = {from, to, worker}
+  //     result.moves?.push(tempMove)
+  //   })
 
-    if(buildings.length === 1 && buildings[0] !== "-"){      
+  //   if(buildings.length === 1 && buildings[0] !== "-"){      
     
-      if(this.turnCount < 3){
-        throw new Error(`Invalid notation: cannot build this turn: ${this.turnCount}`);   
-        return null;       
-      }
+  //     if(this.turnCount < 3){
+  //       throw new Error(`Invalid notation: cannot build this turn: ${this.turnCount}`);   
+  //       return null;       
+  //     }
 
-      let tempbuilding : Building;
-      buildings.forEach(build => {
-        if(BLOCKS.includes(build[0])){
-          tempbuilding = build[0] as Block
-        }
-        else if(DOMES.includes(build[0])){
-          tempbuilding = build[0] as Dome
-        }
-        if(!BLOCKS.includes(tempbuilding) && !DOMES.includes(tempbuilding) && !TILES.includes(build.substring(1))){
-          throw new Error(`Invalid move notation: ${tempbuilding}`)
-          return null;
-        }
-        const tempBuild:Build = {building: tempbuilding, tile: build.substring(1) as Tile}
-        result.buildings?.push(tempBuild)
-      })
-    }
-    // console.log('Turn created: ', result)
-    return result;
-  }
+  //     let tempbuilding : Building;
+  //     buildings.forEach(build => {
+  //       if(BLOCKS.includes(build[0])){
+  //         tempbuilding = build[0] as Block
+  //       }
+  //       else if(DOMES.includes(build[0])){
+  //         tempbuilding = build[0] as Dome
+  //       }
+  //       if(!BLOCKS.includes(tempbuilding) && !DOMES.includes(tempbuilding) && !TILES.includes(build.substring(1))){
+  //         throw new Error(`Invalid move notation: ${tempbuilding}`)
+  //         return null;
+  //       }
+  //       const tempBuild:Build = {building: tempbuilding, tile: build.substring(1) as Tile}
+  //       result.buildings?.push(tempBuild)
+  //     })
+  //   }
+  //   // console.log('Turn created: ', result)
+  //   return result;
+  // }
 
   public validateNotation(): boolean {
     // this.reset();
@@ -630,8 +730,10 @@ class Santorini {
     //validate Gods and their Tokens
     if (tokens[3] !== "-") {
       // console.log("Validate Powers field");
+      
     } else {
-      // console.log("No Gods included");
+      //All mortals
+      this.playerPowers = [new Mortal()]
     }
 
     //update Remaining blocks

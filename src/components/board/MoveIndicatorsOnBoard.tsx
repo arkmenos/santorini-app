@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import { getWorkerYPositionIndicator, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
+    Move, 
     POSITIONS, S_BLOCK_Y_POS, Tile, TILES, Worker, WorkerPostion } from "../../types/Types"
 import MoveIndicator from "../indicators/MoveIndicator"
-import { addCurrentMove, addWorkerPosition, clearIndicators, clearWorkerSelected, incrementWorkerCount, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
+import { addCurrentGameAction, addWorkerPosition, clearIndicators, clearWorkerSelected, incrementWorkerCount, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { ThreeEvent } from "@react-three/fiber";
 import { Message, useToaster } from "rsuite";
@@ -70,13 +71,13 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
                 workerPos.worker = "X" as Worker 
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))
             }           
             else if(workerCount === 2){
                 workerPos.worker = "x" as Worker
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))
             } 
             
             return;
@@ -85,13 +86,13 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
                 workerPos.worker = "Y" as Worker            
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))
             } 
             else if(workerCount === 2) {
                 workerPos.worker = "y" as Worker
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))
             }
             return;
         }else if(turnCount === 3 && playerCount === 3){
@@ -99,13 +100,13 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
                 workerPos.worker = "Z" as Worker   
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))         
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))         
             }
             else if(workerCount === 2){
                 workerPos.worker = "z" as Worker
                 dispatch(incrementWorkerCount())
                 dispatch(addWorkerPosition(workerPos))
-                dispatch(addCurrentMove({from: undefined, to: tile, worker:workerPos.worker}))
+                dispatch(addCurrentGameAction(({from: undefined, to: tile, worker:workerPos.worker}) as Move))
             } 
             
             return;
@@ -119,7 +120,7 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
                 const newPos = [...position]
                 const toTileBlock = tileData[TILES.indexOf(tile)].buildings
                 if(toTileBlock) newPos[1] = getWorkerYPositionIndicator(toTileBlock)
-                if(pos.worker) dispatch(addCurrentMove({from: previousPos.tile, to: tile, worker:pos.worker}))
+                if(pos.worker) dispatch(addCurrentGameAction(({from: previousPos.tile, to: tile, worker:pos.worker}) as Move))
                 dispatch(setWorkerPosition({worker:pos.worker, position:newPos, tile: tile}))
                 dispatch(clearIndicators())
                 dispatch(clearWorkerSelected())

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import SantoriniBoard from "../board/SantoriniBoard"
 import Santorini from "../system/Santorini"
-import { GameProp, Player, START, Turn } from "../../types/Types"
+import { GameProp, Move, Player, START, Turn } from "../../types/Types"
 import { Button, Message, Modal, useToaster } from "rsuite"
 import { socket } from "../../socket/socket"
 import './Game.css'
@@ -64,9 +64,10 @@ function Game({playerInfo, playerCount, players}:GameProp){
         return foundPlayer.name;
     }
 
+
     function opponentTurn(turn: Turn){
         // console.log("opponent Move", turn )
-        santorini.current.turn(turn);
+        santorini.current.takeTurn(turn);
         setSan(santorini.current.getSAN())
         setCurrentPlayerTurn(santorini.current.getPlayerTurn());
         if(santorini.current.isGameOver()){            
@@ -85,17 +86,18 @@ function Game({playerInfo, playerCount, players}:GameProp){
 
     function turnEnd(turn:Turn):boolean{
         // console.log("Turn end in game: ", turn)
-        turn.moves?.forEach(move => {
-            if(move.worker.toLocaleUpperCase() !== santorini.current.getPlayerTurn()){
+        turn.gameActions.forEach(action => {
+            const tempMove = action as Move
+            if(tempMove.worker && tempMove.worker.toLocaleUpperCase() !== santorini.current.getPlayerTurn()){
                 return false
             }
-        })
+        })        
         let newTurn 
         try {
-             newTurn =  santorini.current.turn(turn);
+             newTurn =  santorini.current.takeTurn(turn);
 
         }catch(err){
-            console.log((err as Error).message);
+            console.log((err as Error).message, err);
             toaster.push(<Message type="warning" ><strong>{(err as Error).message}</strong></Message>, {placement: 'topCenter'})
             return false
         }

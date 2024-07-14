@@ -25,8 +25,8 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, en
 
     const dispatch = useAppDispatch();
     const canBuild = useAppSelector((state) => state.boardState.canBuild)
-    const currentMoves = useAppSelector((state) => state.boardState.currentMoves)
-    const currentBuilds = useAppSelector((state) => state.boardState.currentBuilds)
+    const currentGameActions = useAppSelector((state) => state.boardState.currentGameActions)
+    // const currentBuilds = useAppSelector((state) => state.boardState.currentBuilds)
     
 
     const handleBuild = () => {
@@ -36,7 +36,7 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, en
     }
 
     const handleEndTurn = () => {
-        const turn:Turn = {moves:currentMoves, buildings:currentBuilds}
+        const turn:Turn = {gameActions: currentGameActions}
  
         if(onTurnEnd(turn)){
             // console.log("onTurnEnd executed")
