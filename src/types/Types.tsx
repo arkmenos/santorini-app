@@ -3,7 +3,7 @@ export type Block = 'L' | 'M' | 'S' | 'E';
 export type Dome = 'D' | 'F' | 'G' | 'H';
 export type Player = 'X' | 'Y' | 'Z' ;
 export type Worker = 'X' | 'x' | 'Y' | 'y' | 'Z' | 'z';
-export type God = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X';
+export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X';
 export type GodToken = 'W' | 'P' | 'p' | 'C' | 'T' | 'E' | 'e' | 'R' | 'S' | 'A' | 'O';
 export type Tile = 'a5'|'b5'|'c5'| 'd5'| 'e5'|'a4'|'b4'|'c4'| 'd4'| 'e4'|'a3'|'b3'|'c3'| 'd3'| 'e3'|'a2'|'b2'|'c2'| 'd2'| 'e2'|'a1'|'b1'|'c1'| 'd1'| 'e1';
 
@@ -61,9 +61,10 @@ export type Build = {
     tile: Tile 
 }
 export type Turn = {
-    moves?: Move[],
-    buildings?: Build[],
+    gameActions: GameAction[]
 }
+
+export type GameAction = Move | Build
 
 export type GamePlayer = Player | 'S'
 
@@ -151,8 +152,7 @@ export type BoardState = {
     playerTurn: Player,
     playerCount: number,
     workerCount: number,
-    currentMoves: Move[],
-    currentBuilds: Build[]
+    currentGameActions: GameAction[],
 }
 
 export type WorkerPostion = {

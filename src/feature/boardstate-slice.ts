@@ -20,8 +20,7 @@ const initialState = {
     playerTurn: "X",
     playerCount: 2,
     workerCount: 1,
-    currentBuilds: [],
-    currentMoves: [],
+    currentGameActions: [],
 } as BoardState
 
 const boardState = createSlice({
@@ -126,21 +125,22 @@ const boardState = createSlice({
             state.workerPositions = [...state.previousWorkerPositions]
             state.moveIndicator.tiles = [...state.previousMoveIndicator.tiles]
             state.workerCount = state.workerPositions.length + 1
-            state.currentBuilds = []
-            state.currentMoves = []
+            state.currentGameActions = []
             state.canBuild = false;
         },
         clearCurrentTurnData(state){
-            state.currentBuilds = []
-            state.currentMoves = []
+            state.currentGameActions = []
             state.canBuild = false;
         },
-        addCurrentMove(state, action:PayloadAction<Move>){
-            state.currentMoves = [...state.currentMoves, action.payload]
+        addCurrentGameAction(state, action:PayloadAction<Move|Build>){
+            state.currentGameActions = [...state.currentGameActions, action.payload]
         },
-        addCurrentBuild(state, action:PayloadAction<Build>){
-            state.currentBuilds = [...state.currentBuilds, action.payload]
-        }
+        // addCurrentMove(state, action:PayloadAction<Move>){
+        //     state.currentMoves = [...state.currentMoves, action.payload]
+        // },
+        // addCurrentBuild(state, action:PayloadAction<Build>){
+        //     state.currentBuilds = [...state.currentBuilds, action.payload]
+        // }
 
     }
 })
@@ -148,5 +148,5 @@ const boardState = createSlice({
 export const { clearIndicators, setIndicators, setPlayer, setTileData, setWorkerPosition, 
     setWorkerPositions, setWorkerSelected, clearWorkerSelected, setCanBuild, updateTileData,
     setPlayerTurn, setTurnCount, setBoardState, addWorkerPosition, incrementWorkerCount, 
-    undoTurn, addCurrentBuild, addCurrentMove, clearCurrentTurnData } = boardState.actions;
+    undoTurn, addCurrentGameAction, clearCurrentTurnData } = boardState.actions;
 export default boardState.reducer;
