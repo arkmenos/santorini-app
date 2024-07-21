@@ -3,11 +3,14 @@ export type Block = 'L' | 'M' | 'S' | 'E';
 export type Dome = 'D' | 'F' | 'G' | 'H';
 export type Player = 'X' | 'Y' | 'Z' ;
 export type Worker = 'X' | 'x' | 'Y' | 'y' | 'Z' | 'z';
-export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X';
+export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X'
+    | 'XI' | 'XII' | 'XIII' | 'XIV' | 'XV' | 'XVI' | 'XVII' | 'XVIII' | 'XIX' | 'XX'
+    | 'XXI' | 'XXII' | 'XXIII' | 'XXIV' | 'XXV' | 'XXVI' | 'XXVII' | 'XXVIII' | 'XXIX' | 'XXX';
 export type GodToken = 'W' | 'P' | 'p' | 'C' | 'T' | 'E' | 'e' | 'R' | 'S' | 'A' | 'O';
 export type Tile = 'a5'|'b5'|'c5'| 'd5'| 'e5'|'a4'|'b4'|'c4'| 'd4'| 'e4'|'a3'|'b3'|'c3'| 'd3'| 'e3'|'a2'|'b2'|'c2'| 'd2'| 'e2'|'a1'|'b1'|'c1'| 'd1'| 'e1';
 
 export const TILES = ['a5','b5','c5', 'd5', 'e5','a4','b4','c4', 'd4', 'e4','a3','b3','c3', 'd3', 'e3','a2','b2','c2', 'd2', 'e2','a1','b1','c1', 'd1', 'e1']
+export const PERIMETER_TILES = ['a5', 'b5','c5', 'd5', 'e5', 'a4', 'a3','a2', 'a1', 'b1', 'c1', 'd1', 'e1', 'e2', 'e3', 'e4']
 
 export const START = "5/5/5/5/5 X - - L22/M18/S14/D18 - - 1";
 export const BLOCKS = ['L', 'M', 'S'];
@@ -16,6 +19,12 @@ export const PLAYERS: Player[] = ['X', 'Y', 'Z'];
 export const WORKERS = ['X' , 'x' , 'Y' , 'y' , 'Z' , 'z'];
 export const GODS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'];
 export const GODTOKENS = ['W' , 'P' , 'p' , 'C' , 'T', 'G', 'g'  , 'R' , 'S' , 'A' , 'O'];
+export const GODIDENTIFIERS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'
+    , 'XI' , 'XII' , 'XIII' , 'XIV' , 'XV' , 'XVI' , 'XVII' , 'XVIII' , 'XIX' , 'XX'
+    , 'XXI' , 'XXII' , 'XXIII' , 'XXIV' , 'XXV' , 'XXVI' , 'XXVII' , 'XXVIII' , 'XXIX' , 'XXX', '-'];
+export const TWOPLAYERONLY = ['XI', 'XVI', 'XVII'];
+export const UNAVAILABLE_POWERS = ['XIV', 'XXV'];
+export const AVAILABLE_POWERS = ['IX', 'XVI'];
 
 export const MAX_L_BLOCKS = 22;
 export const MAX_M_BLOCKS = 18;
@@ -124,6 +133,15 @@ VALID_BUILDS.set(tileL, tileM)
 VALID_BUILDS.set(tileM, tileS)
 VALID_BUILDS.set(tileS, domeD)
 
+export const ATLAS_VALID_BUILDS: Map<Building,Building> = new Map(VALID_BUILDS);
+const domeL:Dome = "F";
+const domeM:Dome = "G";
+const domeE:Dome = "H";
+ATLAS_VALID_BUILDS.set(tileE, domeE);
+ATLAS_VALID_BUILDS.set(tileL, domeL);
+ATLAS_VALID_BUILDS.set(tileM, domeM);
+
+
 
 
 export  const POSITIONS: number[][] = new Array<number[]>();
@@ -230,4 +248,54 @@ export interface BlockProp {
     position:[x:number, y:number,z:number],
     size?:[width:number, height:number,depth:number],
     color?: string
+}
+
+export interface GodCardInfo {
+    name: string;
+    description: string ;
+    flavorText: string;
+    identifier: GodIdentifier | null; 
+}
+
+export function isMoveAscending(moveAction: Move, tileData: TileData[]): boolean{
+    if(moveAction.from  && moveAction.to){
+        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
+
+        if(fromBlockLevel === "E" && toBlockLevel === "L" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "L" && toBlockLevel === "M" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "M" && toBlockLevel === "S" && !isWorkerOnTile) return true;            
+    }
+
+    return false        
+}
+
+export function isMoveDescending(moveAction: Move, tileData: TileData[]): boolean{
+    if(moveAction.from  && moveAction.to){
+        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
+        
+        if(fromBlockLevel === "L" && toBlockLevel === "E" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "M" && (toBlockLevel === "L" || toBlockLevel === "E")) 
+            return true;
+        if(fromBlockLevel === "S" && (toBlockLevel === "M" || 
+            toBlockLevel === "L" || toBlockLevel === "E") && !isWorkerOnTile) return true;            
+    }
+    return false        
+}
+
+export function isMoveSameLevel(moveAction: Move, tileData:TileData[]): boolean {
+    if(moveAction.from  && moveAction.to){
+        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
+        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
+        
+        if(fromBlockLevel === "E" && toBlockLevel === "E" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "L" && toBlockLevel === "L" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "M" && toBlockLevel === "M" && !isWorkerOnTile) return true;
+        if(fromBlockLevel === "S" && toBlockLevel === "S" && !isWorkerOnTile) return true;
+    }
+    return false;
 }

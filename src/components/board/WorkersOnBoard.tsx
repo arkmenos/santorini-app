@@ -10,6 +10,7 @@ import { setIndicators, setPlayer, setWorkerSelected } from "../../feature/board
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks.js";
 import { Message, useToaster } from "rsuite";
+import { ThreeEvent } from "@react-three/fiber";
 
 interface WorkersProp {
     areWorkersMoveable:boolean
@@ -34,35 +35,35 @@ const WorkersOnBoard = ({areWorkersMoveable}:WorkersProp) => {
             switch(workerPos.worker){
                 case "X":
                     workers.push(<FemaleRed position={workerPos.position} key={uuidv4()} 
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
                 case "x":
                     workers.push(<MaleRed position={workerPos.position} key={uuidv4()}
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
                 case "Y":
                     workers.push(<FemaleBlue position={workerPos.position} key={uuidv4()}
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
                 case "y":
                     workers.push(<MaleBlue position={workerPos.position} key={uuidv4()}
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
                 case "Z":
                     workers.push(<FemaleYellow position={workerPos.position} key={uuidv4()}
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
                 case "z":
                     workers.push(<MaleYellow position={workerPos.position} key={uuidv4()}
-                    workerPosition={workerPos} onClick={() => handleClick(workerPos)} />)
+                    workerPosition={workerPos} onClick={(e: ThreeEvent<MouseEvent>) => handleClick(e,workerPos)} />)
                     break;
             }
         })
         return [workers, positions];
     }, [allWorkers, positions, workerPositions])
     
-    const handleClick = ( workerPos: WorkerPostion) => {
-
+    const handleClick = (e: ThreeEvent<MouseEvent>, workerPos: WorkerPostion) => {
+        e.stopPropagation()
         if(!areWorkersMoveable) {
             // console.log("Not your turn")
             toaster.push(<Message>Not your turn</Message>, {placement: 'topCenter', duration:2500})

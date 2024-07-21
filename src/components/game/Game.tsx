@@ -22,7 +22,7 @@ function Game({playerInfo, playerCount, players}:GameProp){
     const toaster = useToaster()
 
     useEffect(() => {
-        santorini.current = new Santorini(START, playerCount);
+        santorini.current = new Santorini("5/5/5/5/5 X - IX/II L22/M18/S14/D18 - - 1", playerCount);
         if(playerInfo.type === "X") setIsTurn(playerInfo.type === santorini.current.getPlayerTurn());
         
     },[])
