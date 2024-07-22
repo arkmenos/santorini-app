@@ -12,7 +12,7 @@ function Home() {
     const [roomId, setRoomId] = useState("")
     const [, setErrorMsg] = useState("")
     const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
-    const [isSpectator, setIsSpectator] = useState<boolean>(false)
+    // const [isSpectator, setIsSpectator] = useState<boolean>(false)
     const [join, setJoin] = useState<boolean>(false)
     const [start, setStart] = useState(false)
     const [playerCount, setPlayerCount] = useState(1)
@@ -43,8 +43,7 @@ function Home() {
                 name: name,
                 roomId: rmId,
                 type: "X"
-            })
-            
+            })            
         }
     }
 
@@ -56,10 +55,9 @@ function Home() {
             setPlayerInfo({
                 name: name,
                 roomId: roomId,
-                type: isSpectator ? "S" : undefined
+                type: undefined
             })
         }
-
     }
 
     useEffect(() => {      
@@ -87,8 +85,8 @@ function Home() {
                     <label className="name-lbl">Name: </label>
                     <input className="name-input" type="text"  defaultValue={name}
                             onChange={(e)=>setName(e.target.value)}/>
-                    <input className="spectator-box" type="checkbox"  defaultChecked={isSpectator} 
-                        title="Join  Room as a spectator" onChange={(e) => setIsSpectator(e.target.checked)} />
+                    {/* <input className="spectator-box" type="checkbox"  defaultChecked={isSpectator} 
+                        title="Join  Room as a spectator" onChange={(e) => setIsSpectator(e.target.checked)} /> */}
                     <button className="join-btn" onClick={()=>onJoin()}>Join</button>
                 </div>
             )
