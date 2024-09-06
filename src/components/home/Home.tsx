@@ -14,8 +14,8 @@ function Home() {
     const [roomId, setRoomId] = useState("")
     const [ errorMsg, setErrorMsg] = useState("")
     const [playerInfo, setPlayerInfo] = useState<PlayerInfo >({name:"",roomId:"",type:undefined, identifier:null})
-    const [isSpectator, setIsSpectator] = useState<boolean>(false)
-    const [join, setJoin] = useState<boolean>(false)
+    // const [isSpectator, setIsSpectator] = useState<boolean>(false)
+    const [_, setJoin] = useState<boolean>(false)
     const [opponents, setOpponents] = useState<PlayerInfo[]>([])
     const [phase, setPhase] = useState<GameStartPhase>("CreateRoom")
     const { paramRoomId } = useParams<{ paramRoomId: string}>()
@@ -59,7 +59,7 @@ function Home() {
             setPlayerInfo({
                 name: name,
                 roomId: roomId,
-                type: isSpectator ? "S" : undefined,
+                type: undefined, // can set to spector
                 identifier: null
             })
             setPhase("WaitingRoom")

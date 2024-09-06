@@ -102,7 +102,7 @@ class Hermes extends Mortal {
     }
 
     protected performMoveAction(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){               
+        workerPositions: Tile[], _: Player, turnCount: number, playerCount: number){               
         let isPrimaryWinConditionMet = false
         if(turnCount <=2 || (turnCount === 3 && playerCount === 3)){
             const firstMove = turn.gameActions[0] as Move
@@ -158,9 +158,9 @@ class Hermes extends Mortal {
                     delete tileData[TILES.indexOf(firstMove.from)].worker
                     }
                     workerPositionsMap.set(firstMove.worker, firstMove.to)
-                    workerPositions.push(firstMove.to)
-                    let isPrimaryWinConditionMet = false
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    
+                    isPrimaryWinConditionMet = false
+                   
                     if(this.isPrimaryWinconditionMet(firstMove, tileData)) isPrimaryWinConditionMet = true;
                 }   
             }

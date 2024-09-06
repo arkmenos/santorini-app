@@ -19,7 +19,7 @@ abstract class Restriction {
     public abstract isMoveRestricted(move: Move, tileData: TileData[]): boolean;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public isBuildRestricted(turn: Turn, tileData: TileData[]): boolean {
+    public isBuildRestricted(_: Turn, __: TileData[]): boolean {
         return false;
     }
 

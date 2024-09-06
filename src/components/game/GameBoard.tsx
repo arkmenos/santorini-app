@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { GameProp, SIMPLE_GOD_POWERS } from "../../types/Types"
+import { GameProp } from "../../types/Types"
 import { ALL_GODS_INFO } from "../godCard/GodCardsInformation"
 import Game from "./Game"
 import PowerPopUp from "./Popups/PowerPopUp"

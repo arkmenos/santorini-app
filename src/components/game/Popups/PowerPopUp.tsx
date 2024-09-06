@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { GodCardInfo, PopUpProp } from "../../../types/Types"
 import "./PowerPopUp.css"
 
@@ -25,8 +25,7 @@ function PowerPopUp({name, godCardInfo, index,selectedIndex, setSelectedIndex}:P
         return (index === selectedIndex && show) ? "popup-power-show": "popup-power"
     }
     if(godCardInfo !== null && godCardInfo !== undefined ){
-        return (     
-            
+        return (                
             <div className="popup-container">
                 <button className="popup-button" onClick={handleOnClick}>{name}</button>
                 <div className={showPopUp()}  
@@ -35,11 +34,8 @@ function PowerPopUp({name, godCardInfo, index,selectedIndex, setSelectedIndex}:P
                     <p>{godCardInfo.description}</p>
                 </div>
             </div>
-            
-        
         )
-    }
-    
+    }    
 }
 
 export default PowerPopUp

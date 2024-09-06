@@ -26,7 +26,7 @@ function Tips({index, selectedIndex, setSelectedIndex}:PopUpProp){
     }
     return (
         isMobile() && 
-        <IconContext.Provider value={{size:30, color:"white"}}>
+        <IconContext.Provider value={{size:"30", color:"white"}}>
         
             <div className="tip-container" >
             {/* <button className="popup-button" onClick={handleOnClick}>camera tips</button> */}
