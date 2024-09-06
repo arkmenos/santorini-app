@@ -1,4 +1,4 @@
-import { ATLAS_VALID_BUILDS, Build, Move, TILE_ADJACENCY, TileData, TILES } from "../../../types/Types";
+import { ATLAS_VALID_BUILDS, Build, Building, Move, TILE_ADJACENCY, TileData, TILES } from "../../../types/Types";
 import Mortal from "../Mortal";
 
 

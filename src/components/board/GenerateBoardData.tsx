@@ -2,6 +2,7 @@ import {
   BLOCKS,
   DOMES,
   getStartTileData,
+  GodIdentifier,
   Player,
   PLAYER_POS_FIRST_LEVEL,
   PLAYER_POS_GROUND,
@@ -22,6 +23,7 @@ export const GenerateBoardData = (SAN: string) => {
   let turnCount = 1;
   let playerCount = 2;
   const workerPositions:WorkerPostion[] = []
+  let playerPowers:GodIdentifier[] = []
   
   
   // console.log("validate SAN")
@@ -31,6 +33,13 @@ export const GenerateBoardData = (SAN: string) => {
     throw new Error("Invalid notation: must contain 7 or 8 space-delimited fields");
   }
 
+  //set Player Powers
+  if(tokens[3] !== "-"){
+    const identifiers = tokens[3].split("/")
+    if(identifiers.length > 0){
+      playerPowers = [...identifiers as GodIdentifier[]]      
+    }
+  }
   //set turn count
   if(tokens[7]){
     const tempTurn = parseInt(tokens[7])
@@ -199,5 +208,5 @@ export const GenerateBoardData = (SAN: string) => {
 
   // console.log("workers", workers);
 
-  return { tileData, workerPositions, turnCount, playerTurn, playerCount};
+  return { tileData, workerPositions, turnCount, playerTurn, playerCount, playerPowers};
 };

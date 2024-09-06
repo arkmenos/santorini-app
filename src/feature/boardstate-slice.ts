@@ -21,6 +21,7 @@ const initialState = {
     playerCount: 2,
     workerCount: 1,
     currentGameActions: [],
+    playerPowers: [],
 } as BoardState
 
 const boardState = createSlice({
@@ -92,6 +93,7 @@ const boardState = createSlice({
             state.playerTurn = action.payload.playerTurn
             state.turnCount = action.payload.turnCount
             state.playerCount = action.payload.playerCount
+            state.playerPowers = [...action.payload.playerPowers]
 
             //Adjust parameters
             if(state.workerPositions.length > 4){

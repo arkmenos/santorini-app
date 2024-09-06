@@ -8,7 +8,7 @@ function Board({children}:BProps) {
         <>
         <mesh position={[0,-1.9,0]} >
             <boxGeometry args={[6,0.5,6]}/>
-            <meshBasicMaterial color={"cyan"} />                
+            <meshBasicMaterial color={"blue"} />                
 
             {children}
         </mesh>

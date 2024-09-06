@@ -25,6 +25,7 @@ export const GODIDENTIFIERS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 
 export const TWOPLAYERONLY = ['XI', 'XVI', 'XVII'];
 export const UNAVAILABLE_POWERS = ['XIV', 'XXV'];
 export const AVAILABLE_POWERS = ['IX', 'XVI'];
+export const SIMPLE_GOD_POWERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X']
 
 export const MAX_L_BLOCKS = 22;
 export const MAX_M_BLOCKS = 18;
@@ -80,14 +81,19 @@ export type GamePlayer = Player | 'S'
 export interface PlayerInfo {
     name: string,
     roomId: string,
-    type?: GamePlayer
+    type?: GamePlayer,
+    identifier: GodIdentifier | null;
 }
 
 export interface GameProp{
     playerInfo:PlayerInfo,
-    playerCount:number,
-    players: PlayerInfo[],
+    opponents: PlayerInfo[],
 }
+
+export type PlayMode =  "No Powers" | "Pick Powers" | "Random Powers";
+export const PLAY_MODES = ["No Powers", "Pick Powers", "Random Powers"]
+
+export type GameStartPhase = "CreateRoom" | "JoinRoom" | "WaitingRoom" | "PickPowers" | "StartGame";
 
 export const TILE_ADJACENCY: number[][] = new Array<number[]>();
 TILE_ADJACENCY[0] = [1,5,6];
@@ -133,13 +139,14 @@ VALID_BUILDS.set(tileL, tileM)
 VALID_BUILDS.set(tileM, tileS)
 VALID_BUILDS.set(tileS, domeD)
 
-export const ATLAS_VALID_BUILDS: Map<Building,Building> = new Map(VALID_BUILDS);
+export const ATLAS_VALID_BUILDS: Map<Building,Building[]> = new Map();
 const domeL:Dome = "F";
 const domeM:Dome = "G";
 const domeE:Dome = "H";
-ATLAS_VALID_BUILDS.set(tileE, domeE);
-ATLAS_VALID_BUILDS.set(tileL, domeL);
-ATLAS_VALID_BUILDS.set(tileM, domeM);
+ATLAS_VALID_BUILDS.set(tileE, [tileL, domeE]);
+ATLAS_VALID_BUILDS.set(tileL, [tileM, domeL]);
+ATLAS_VALID_BUILDS.set(tileM, [tileS, domeM]);
+ATLAS_VALID_BUILDS.set(tileS, [domeD])
 
 
 
@@ -171,6 +178,7 @@ export type BoardState = {
     playerCount: number,
     workerCount: number,
     currentGameActions: GameAction[],
+    playerPowers:GodIdentifier[],
 }
 
 export type WorkerPostion = {
@@ -250,11 +258,16 @@ export interface BlockProp {
     color?: string
 }
 
-export interface GodCardInfo {
+export type GodCardInfo = {
     name: string;
     description: string ;
     flavorText: string;
     identifier: GodIdentifier | null; 
+}
+export interface PopUpProp {
+    index: string,
+    selectedIndex: string,
+    setSelectedIndex:(arg0:string) => void
 }
 
 export function isMoveAscending(moveAction: Move, tileData: TileData[]): boolean{
@@ -299,3 +312,9 @@ export function isMoveSameLevel(moveAction: Move, tileData:TileData[]): boolean 
     }
     return false;
 }
+
+export function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  }

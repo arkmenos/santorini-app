@@ -1,4 +1,4 @@
-import { Build, Building, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+import { Build, Building, isMoveSameLevel, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
 import Mortal from "../Mortal";
 
 class Hermes extends Mortal {
@@ -28,7 +28,7 @@ class Hermes extends Mortal {
                         
                         if(!(action as Move).worker)
                             throw new Error("Must complete all move actions before building. Refer to God Power")
-                        if(!this.isMoveSameLevel(action as Move, tileData)){
+                        if(!isMoveSameLevel(action as Move, tileData)){
                             throw new Error("To move multiple times, all move action must be on the same level. Refer to God Power")
                         }
                     }

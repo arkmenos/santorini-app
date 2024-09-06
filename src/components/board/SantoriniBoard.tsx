@@ -1,9 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import Board from "./Board"
 import './SantoriniBoard.css'
-import { START, Turn } from "../../types/Types"
+import { isMobile, START, Turn } from "../../types/Types"
 import { GenerateBoardData } from "./GenerateBoardData"
 import { v4 as uuidv4 } from 'uuid'
 import WorkersOnBoard from "./WorkersOnBoard"
@@ -26,6 +26,8 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, en
     const dispatch = useAppDispatch();
     const canBuild = useAppSelector((state) => state.boardState.canBuild)
     const currentGameActions = useAppSelector((state) => state.boardState.currentGameActions)
+    const [fov, _] = useState(isMobile() ? 110: 90)
+    // const cameraControlsRef = useRef<CameraControls>(null);
     // const currentBuilds = useAppSelector((state) => state.boardState.currentBuilds)
     
 
@@ -52,14 +54,19 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, en
         dispatch(clearCurrentTurnData()) 
     }
     
+    // useEffect(()=> {
+    //     cameraControlsRef.current?.lookInDirectionOf(15, 0, 1, false)
+    // })
+
     useEffect(() => {
         const data = GenerateBoardData(SAN === "" ? START : SAN);
         dispatch(setBoardState(data))
     }, [SAN])
 
     return(
-        <div id="container">          
-            <Canvas >
+        <div id="gameboard">          
+            <Canvas camera={{ fov: fov, position: [0, 3, 5] }}>
+            {/* <CameraControls enabled={true} ref={cameraControlsRef}/> */}
                 <directionalLight position={[0,0,2]} intensity={0.8}  />
                 <ambientLight/>
                 <Board key={uuidv4()}>
@@ -69,7 +76,9 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, en
                     <BoardCoordinates />
                 </Board>     
                 <OrbitControls   minDistance={2}  maxDistance={6} minPolarAngle={0}
-                    maxPolarAngle={1.75} target={[0,-0.25,3]} position={[1,2,3]}/>
+                    maxPolarAngle={1.75} target={[0,0.1,-0.5]} 
+                    panSpeed={0.5} rotateSpeed={0.1} zoomSpeed={0.5}  />
+                    
             </Canvas>           
             <Affix className="affix" >
                 <div>

@@ -1,12 +1,19 @@
-#container {
-    width: 800;
-    height: 800px;
+#gameboard {
+    /* width: 800px;  */
+    /* height: 800px; */
+    /* width: 100%;*/
+    width:100vw;
+    height:100vh;
+    /* min-width: 100vw;
+    min-height: 100vh;   */
     background-color: rgb(110, 167, 182);
+    background-image: linear-gradient(rgb(19, 160, 196),blue);
 }
 .affix {
     position:absolute;
     top: 20%;
     left: 80%;
+    border: 1px;
 }
 .build-btn {
     background-color: rgb(204, 222, 240);
@@ -16,5 +23,7 @@
 .endTurn-btn, .undoTurn-btn {
     background-color: rgb(204, 222, 240);
     font-size: larger;
+    z-index: 3;
+    position: absolute;
 }
 

@@ -1,0 +1,19 @@
+.turn-info {
+    background-color: rgb(155, 213, 221);
+    border-radius: 10%;
+
+    position:absolute;
+    top:5%;
+    left:50%;
+    transform: translate(-50%, 0);
+    border-radius: 20%;
+    /* box-shadow: 5px 2px 2px red; */
+}
+
+.turn-msg {
+    font-size: larger;
+    font-weight: bold;
+    color: rgb(34, 22, 5);
+    padding: 1rem;
+    
+}

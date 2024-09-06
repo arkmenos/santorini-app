@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import SantoriniBoard from "../board/SantoriniBoard"
 import Santorini from "../system/Santorini"
-import { GameProp, Move, Player, START, Turn } from "../../types/Types"
+import { GameProp, Move, Player, Turn } from "../../types/Types"
 import { Button, Message, Modal, useToaster } from "rsuite"
 import { socket } from "../../socket/socket"
 import './Game.css'
 import "rsuite/dist/rsuite-no-reset.min.css"
 import "rsuite/dist/rsuite.min.css";
-import TurnIndicator from "./TurnIndicator"
+import TurnInfo from "./TurnInfo"
 // import 'rsuite/useToaster/styles/index.css';
 // import 'rsuite/Message/styles/index.css'
 
-function Game({playerInfo, playerCount, players}:GameProp){
+function Game({playerInfo, opponents}:GameProp){
     const santorini = useRef<Santorini>(null!)
     const [san, setSan] = useState("")
     const [isturn, setIsTurn] = useState(false)
@@ -22,10 +22,35 @@ function Game({playerInfo, playerCount, players}:GameProp){
     const toaster = useToaster()
 
     useEffect(() => {
-        santorini.current = new Santorini("5/5/5/5/5 X - IX/II L22/M18/S14/D18 - - 1", playerCount);
+
+        let powerX, powerY, powerZ 
+        let powers = ""
+        if(playerInfo.type === "X") powerX = playerInfo.identifier
+        else if(playerInfo.type === "Y") powerY = playerInfo.identifier
+        else if(playerInfo.type === "Z") powerZ = playerInfo.identifier
+
+        opponents.forEach(o => {
+            if(o.type === "X") powerX = o.identifier
+            else if(o.type === "Y") powerY = o.identifier
+            else if(o.type === "Z") powerZ = o.identifier
+        })
+        console.log("Powers...", powerX, powerY, powerZ, opponents)
+        if(powerX){
+            powers = `${powerX}/${powerY}`
+            if(opponents.length === 2){
+                powers += `/${powerZ}`
+            }
+
+        }else {
+            powers = "-"
+        }
+        console.log("Powers", powers, playerInfo, opponents)
+        santorini.current = new Santorini("5/5/5/5/5 X - " + powers + " L22/M18/S14/D18 - - 1", opponents.length + 1);
         if(playerInfo.type === "X") setIsTurn(playerInfo.type === santorini.current.getPlayerTurn());
         
     },[])
+
+
 
     // function updateMove(){
     //     const santoriniRef: Santorini = santorini.current;
@@ -59,7 +84,9 @@ function Game({playerInfo, playerCount, players}:GameProp){
     function getWinner():string {
         if(!santorini.current) return ""
         const pturn = santorini.current.getWinner();
-        const foundPlayer = players.find(p => p.type === pturn)
+        if(playerInfo.type === pturn) return playerInfo.name
+
+        const foundPlayer = opponents.find(p => p.type === pturn)        
         if(!foundPlayer) return "";
         return foundPlayer.name;
     }
@@ -120,18 +147,11 @@ function Game({playerInfo, playerCount, players}:GameProp){
 
     return (
         <div>
-            <SantoriniBoard SAN={san} onTurnEnd={turnEnd} areWorkersMoveable={isturn}/>
-            {/* <div className="move_area">
-                <br/>
-                <input id="san"   type="text" placeholder="SAN notation"/>
-                <button onClick={()=>updateSAN()}>Update SAN</button><br/><br/>
-                <input id="move" type="text" placeholder="Type Turn"/>
-                <button onClick={() =>updateMove()}>Validate Turn</button><br/><br/>
-                <div>Updated SAN: {san}</div>
-                {winner.length > 0 && <div>{winner} WON!!!</div> }
-            </div> */}
-            <TurnIndicator players={players} player={playerInfo} 
+            <TurnInfo opponents={opponents} player={playerInfo} 
                 currentPlayerTurn={currentPlayerTurn} />
+            
+            <SantoriniBoard SAN={san} onTurnEnd={turnEnd} areWorkersMoveable={isturn}/>
+            
             <Modal open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Modal.Title>Game Over</Modal.Title>

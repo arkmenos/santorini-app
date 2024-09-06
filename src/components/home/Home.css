@@ -1,23 +1,46 @@
 .container {
-  margin: auto;
-  margin-top: 20%;
-  width: 60%;
-  /* border: 3px solid green; */
-  padding: 20px;
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    text-align: center;
+    font-size: larger;
+    align-content: center;
+    background-color: rgb(46, 46, 235);
+    background-image: linear-gradient(rgb(19, 160, 196),rgb(46, 46, 235));
 
-  text-align: center;
-  font-size: larger;
-  /* background-color: rgb(46, 46, 235); */
-  color: aliceblue;
-
+    /* width: 100%; */
+    min-height: 100vh;
+    /* margin-left: auto;
+    margin-right: auto;*/
+    /* padding-left: 2rem;
+    padding-right: 2rem;  */
+    color: aliceblue;
+    display: flex;
+    
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 15px;
+    /* text-wrap: wrap; */
+    align-items: center;
+    /* padding-bottom: 20%; */
 }
 
+.header{
+    font-size: x-large;
+    /* margin-bottom:10px ; */
+}
 .name-lbl{
     font-size: large;
+    /* margin-bottom:20px ; */
 }
 .name-input {
     background-color: white;
     color: black;
+    height: 30px;
+    font-size: large;
+    text-align: center;
+    /* margin-bottom:20px ; */
 }
 .create-btn, .start-btn, .join-btn {
     margin-left: 20px;
@@ -36,16 +59,20 @@
     background: #0a5fff;
     font-size: 18px;
     color: #fff;
-    padding: 12px 32px;
-    font-weight: 400;
+     padding: 12px 20px 12px 12px;
+     margin: 12px 12px 12px 12px;
+    /*font-weight: 400;
     text-align: center;
-    border-radius: 10px;
+    border-radius: 10px; */
 }
 .player-list {
     list-style: none;
     font-size: larger;
 }
-
+.error-msg{
+    color: Red;
+    font-size: larger;
+}
 /* * {
     background-color:hsl(220, 75%, 50%);
 } */

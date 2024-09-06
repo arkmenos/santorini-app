@@ -1,0 +1,15 @@
+.player-info {
+    position: absolute;
+    top:7%;
+    left:10%;
+}
+
+.opponent-info {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top:12%;
+    left:10%;
+    height: 1rem;
+    column-gap: 3rem;
+}

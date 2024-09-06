@@ -1,0 +1,68 @@
+.godCards-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    /* text-wrap: wrap; */
+    align-items: center;
+    /* align-content: center; */
+    max-width: 40rem;
+    color: aliceblue;
+    position:relative;
+    min-height: 100hv;
+    padding-bottom: 5rem;
+    align-items: center;
+    
+}
+
+.power-header {
+    text-align: center;
+    color: aliceblue;
+    padding-bottom: 20px;
+}
+
+/* .description-area {
+    display: none;
+    visibility: hidden;
+  
+} */
+
+.description-area {
+    display: flex;
+    position: fixed;
+    bottom: 5%;
+    left: 46%;
+    /* right: 5%; */
+    background-color:  rgb(243, 243, 146);
+    padding: .5em;
+    /* max-width: 80%; */
+    width: 80%;
+    color: blue;
+    justify-content: center;
+    z-index: 1;
+    font-size: larger;
+    margin: 1rem;
+    align-items: center;
+    flex-direction: column;
+    max-width: 40rem;
+    border-radius: 2rem;
+    border: 1px solid black;
+    transform: translate(-50%, 0);
+}
+
+/* .select-power {
+   display: none;
+} */
+
+.select-power {
+    margin-left: 20px;
+    background-color: rgb(0, 255, 21);
+    padding: 0.5rem;
+    font-size: large;
+    border-radius: 10px;
+    margin: 0.5rem;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+}
+.select-power:active {
+    box-shadow: none;
+}

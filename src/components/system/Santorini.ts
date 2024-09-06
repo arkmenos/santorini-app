@@ -82,6 +82,10 @@ class Santorini {
     return this.turns;
   }
 
+  public getPlayerPowers():Mortal[] {
+    return this.playerPowers
+  }
+
   private reset() {
     this.remainingLBlocks = 0;
     this.remainingMBlocks = 0;

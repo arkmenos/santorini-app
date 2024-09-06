@@ -1,0 +1,41 @@
+.popup-container {
+    position: relative;
+    /* top:7%;
+    left:10%; */
+    /* display: inline-block; */
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    z-index: 1;
+    height: 3rem;
+    overflow: visible;
+    
+}
+
+.popup-button {
+    padding: 0.5rem;
+    border-radius: 10%;
+    background-color: greenyellow;
+    /* z-index:2; */
+}
+
+.popup-power {
+    z-index: -1;
+    visibility: hidden;
+}
+
+.popup-power-show {
+    position: absolute;
+    visibility: visible;
+    width:15rem;
+    /* height:rem; */
+    /* margin-left: 5rem;  
+    margin-top: -3rem;   */
+    background-color: antiquewhite;
+    border-radius: 1rem;
+    padding: .2rem;
+    top:0rem;
+    left: 5rem;
+}

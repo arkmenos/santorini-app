@@ -210,3 +210,9 @@ export const ZeusCard: GodCardInfo = {
     flavorText : "God of the Sky",
     identifier : "XXX"
 };
+
+export const ALL_GODS_INFO: GodCardInfo[] = [ApolloCard, ArtemisCard, AthenaCard, AtlasCard, DemeterCard, HephaestusCard, 
+    HermesCard, MinotaurCard, PanCard, PrometheusCard, AphroditeCard, AresCard, BiaCard, ChaosCard, CharonCard, 
+    ChronusCard, CirceCard, DionysusCard, ErosCard, HeraCard, HestiaCard, HypnusCard, LimusCard, MedusaCard, 
+    MorpheusCard, PersephoneCard, PoseidonCard, SeleneCard, TritonCard, ZeusCard
+]
