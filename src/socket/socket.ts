@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client'
 
 
-const URL = "http://localhost:4000"
+const URL = "https://santorini-server.onrender.com"
 
 export const socket = io(URL, {
     autoConnect: false, transports:['websocket', 'polling', 'webtransport'],
