@@ -37,5 +37,9 @@
     border-radius: 1rem;
     padding: .2rem;
     top:0rem;
-    left: 5rem;
+    left: 8rem;
+    z-index: 2;
+}
+.god-name-header {
+    font-size: small;
 }

@@ -1,6 +1,7 @@
 import "./Tips.css"
 import { IconContext } from "react-icons";
-import { isMobile, PopUpProp } from "../../../types/Types";
+import { PopUpProp } from "../../../types/Types";
+import { isMobile } from "../../../Utility/Utility";
 import {  useState } from "react";
 import { AiOutlineVideoCamera } from "react-icons/ai";
 
@@ -10,7 +11,7 @@ function Tips({index, selectedIndex, setSelectedIndex}:PopUpProp){
 
     const handleOnClick = () => {
         setSelectedIndex(index)
-        setShow(!show)
+        setShow(show => !show)
         console.log("Tips clicked", index, selectedIndex)
 
     }

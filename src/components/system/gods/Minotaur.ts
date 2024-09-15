@@ -1,4 +1,5 @@
 import { Build, DOMES, Move, Player, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
+import { getMinotaurPushDestinationTile } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
 
 class Minotaur extends Mortal {
@@ -16,15 +17,9 @@ class Minotaur extends Mortal {
                 if(firstMoveAction.to !== secondMoveAction.from) return false;
                 if(tileData[TILES.indexOf(secondMoveAction.to)])
                 if(firstMoveAction.from){
-                    const xFrom = parseInt(firstMoveAction.from.charAt(1))
-                    const yFrom = firstMoveAction.from.charCodeAt(0)
-                    const xTo = parseInt(firstMoveAction.to.charAt(1))
-                    const yTo = firstMoveAction.to.charCodeAt(0)
-                    
-                    const xDirection =  xTo - xFrom
-                    const yDirection = yTo - yFrom
 
-                    const pushedDestTile = `${String.fromCharCode(xTo + xDirection)}${yTo + yDirection}`;
+                    const pushedDestTile = getMinotaurPushDestinationTile(firstMoveAction.from, 
+                        firstMoveAction.to, tileData)
                     
                     if(secondMoveAction.to !== pushedDestTile)
                         throw new Error('Pushed oppenent must be pushed in the same direction as the move action. Refer to God Power')
@@ -95,10 +90,54 @@ class Minotaur extends Mortal {
         }
     }
 
+    
+    // protected isValidMove(moveAction: Move, tileData: TileData[], playerTurn: Player){
+    //     if(playerTurn !== moveAction.worker.toUpperCase()){
+    //         throw new Error(`Cannot move ${moveAction.worker} on ${playerTurn}'s turn`)
+    //     }
+    //     if(moveAction.from){
+    //         if(!TILE_ADJACENCY[TILES.indexOf(moveAction.from)].includes(TILES.indexOf(moveAction.to))){
+    //             throw new Error(`Cannot move from ${moveAction.from} to ${moveAction.to}`);
+    //         }
+    //         else {
+    //             //Tile level check
+    //             const tempFromTile = tileData[TILES.indexOf(moveAction.from)]
+    //             const tempToTile = tileData[TILES.indexOf(moveAction.to)]
+    //             const fromBlockLevel = tempFromTile.buildings ? tempFromTile.buildings : "E" as Building
+    //             const toBlockLevel = tempToTile.buildings ? tempToTile.buildings  : 'E' as Building
+
+    //             // console.log("Temp Data Tiles : ", tempTileData, tempFromTile, tempToTile)
+    //             // console.log("fromBlockLevel toBlockLevel", fromBlockLevel, toBlockLevel)
+    //             if(!VALID_MOVEMENTS.get(fromBlockLevel)?.includes(toBlockLevel) || 
+    //                 (tempToTile.worker?.toUpperCase() === playerTurn) && !this.canPush(moveAction,tileData)){                
+    //                 throw new Error(`Invalid move ${moveAction.worker} from ${moveAction.from} to ${moveAction.to}`);             
+    //             } 
+    //         }
+    //         return true
+    //     }
+    //     else {
+    //         const tileToPlaceWorker = tileData[TILES.indexOf(moveAction.to)]
+    //         if(tileToPlaceWorker){
+    //           if((tileToPlaceWorker.buildings && tileToPlaceWorker.buildings !== "E") ||
+    //             tileToPlaceWorker.worker){
+    //               throw new Error(`Invalid worker placement to ${moveAction.to}`);
+    //           }
+    //           return true
+    //         }
+    //     }
+    //     return false
+    // }
+
+    // protected validateMoveActions(turn: Turn, playerTurn: Player, tileData: TileData[]){
+    //     // const moveAction = turn.gameActions[0] as Move
+    //     // this.isValidMove(moveAction, tileData, playerTurn) 
+    // }
+
+
     protected performMoveAction(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player){
+        workerPositions: Tile[], _playerTurn: Player){
             
-        this.validateMoveActions(turn, playerTurn, tileData);
+        // this.validateMoveActions(turn, playerTurn, tileData);
         let isPrimaryWinConditionMet = false
         const firstMoveAction = turn.gameActions[0] as Move
         if(firstMoveAction.worker){
@@ -123,8 +162,13 @@ class Minotaur extends Mortal {
                     
                     workerPositionsMap.set(secondMoveAction.worker, secondMoveAction.to)
                     workerPositions.push(secondMoveAction.to)
-                }               
-            }            
+                } else{
+                    if(firstMoveAction.from) delete tileData[TILES.indexOf(firstMoveAction.from)].worker
+                }
+            }
+            else{
+                if(firstMoveAction.from) delete tileData[TILES.indexOf(firstMoveAction.from)].worker
+            }
         }
 
         return {tileData:tileData, workerPositionsMap:workerPositionsMap, 

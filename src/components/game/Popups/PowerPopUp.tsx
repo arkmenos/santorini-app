@@ -12,7 +12,7 @@ function PowerPopUp({name, godCardInfo, index,selectedIndex, setSelectedIndex}:P
 
     const handleOnClick = () => {
         setSelectedIndex(index)
-        setShow(!show)
+        setShow(show => !show)
         console.log("PowerPopUp", index, selectedIndex)
     }
     
@@ -27,10 +27,10 @@ function PowerPopUp({name, godCardInfo, index,selectedIndex, setSelectedIndex}:P
     if(godCardInfo !== null && godCardInfo !== undefined ){
         return (                
             <div className="popup-container">
-                <button className="popup-button" onClick={handleOnClick}>{name}</button>
+                <button className="popup-button" onClick={handleOnClick}>{name} - {godCardInfo.name}</button>
                 <div className={showPopUp()}  
                     onClick={handleOnClick} >
-                    <h3>{godCardInfo.name} : {godCardInfo.flavorText}</h3>
+                    <h3 className="god-name-header">{godCardInfo.name} : {godCardInfo.flavorText}</h3>
                     <p>{godCardInfo.description}</p>
                 </div>
             </div>

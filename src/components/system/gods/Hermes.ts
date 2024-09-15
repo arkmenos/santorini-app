@@ -1,5 +1,7 @@
-import { Build, Building, isMoveSameLevel, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+import { Build, Building, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+import { isMoveSameLevel } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
+import Restriction from "../restrictions/Restrictions";
 
 class Hermes extends Mortal {
     constructor(){
@@ -8,6 +10,7 @@ class Hermes extends Mortal {
     }
 
     protected validateActions(turn: Turn, turnCount: number, playerCount:number, tileData:TileData[]){
+        console.log("Validating Hermes Actions")
         if(turnCount <= 2 || (turnCount === 3 && playerCount === 3)){
             if(turn.gameActions.length !== 2) throw new Error("Must place 2 workers on board this turn")
             const seconedMoveAction = turn.gameActions[1] as Move
@@ -57,7 +60,8 @@ class Hermes extends Mortal {
             const tempSingleTileData = tileData[TILES.indexOf(buildAction.tile)]
             const destinationBlock = tempSingleTileData.buildings ? tempSingleTileData.buildings : "E" as Building
 
-            //Check if Building is adjacent to your workers            
+            //Check if Building is adjacent to your workers   
+            console.log("worker location", firstWorkerTile, secondWorkerTile)         
             if((firstWorkerTile && 
                 !TILE_ADJACENCY[firstWorkerTile].includes(TILES.indexOf(buildAction.tile))) &&
                 (secondWorkerTile &&!TILE_ADJACENCY[secondWorkerTile].includes(TILES.indexOf(buildAction.tile)))){
@@ -79,8 +83,10 @@ class Hermes extends Mortal {
         if(!(turnCount <= 2 || (turnCount === 3 && playerCount ===3))){ 
             let buildAction, moveAction
             const numActions = turn.gameActions.length 
+            console.log("Turn", turn)
             if(numActions === 1){
                 buildAction = turn.gameActions[0] as Build
+                
                 if(!(buildAction.building && this.isHermesBuildValid(buildAction, tileData, playerTurn))){
                     throw new Error('Must build adjacent to one of your Workers')
                 }
@@ -135,10 +141,10 @@ class Hermes extends Mortal {
                 if((turn.gameActions[0] as Move).worker){
                     tileData[TILES.indexOf(firstMove.to)].worker = firstMove.worker
                     if(firstMove.from) {
-                    if(!tileData[TILES.indexOf(firstMove.from)].buildings){
-                        tileData[TILES.indexOf(firstMove.from)].buildings = "E"
-                    }
-                    delete tileData[TILES.indexOf(firstMove.from)].worker
+                        if(!tileData[TILES.indexOf(firstMove.from)].buildings){
+                            tileData[TILES.indexOf(firstMove.from)].buildings = "E"
+                        }
+                        delete tileData[TILES.indexOf(firstMove.from)].worker
                     }
                     workerPositionsMap.set(firstMove.worker, firstMove.to)
                     workerPositions.push(firstMove.to)
@@ -163,6 +169,23 @@ class Hermes extends Mortal {
                    
                     if(this.isPrimaryWinconditionMet(firstMove, tileData)) isPrimaryWinConditionMet = true;
                 }   
+            }
+            else {
+                turn.gameActions.forEach((action, index) => {
+                    if(index !== numActions - 1){
+                        const moveAction = action as Move
+                        if(moveAction.worker){
+                            tileData[TILES.indexOf(moveAction.to)].worker = moveAction.worker
+                            if(moveAction.from){
+                                if(!tileData[TILES.indexOf(moveAction.from)].buildings){
+                                    tileData[TILES.indexOf(moveAction.from)].buildings = "E"
+                                }
+                                delete tileData[TILES.indexOf(moveAction.from)].worker
+                            }
+                            workerPositionsMap.set(moveAction.worker, moveAction.to)
+                        }
+                    }                    
+                })
             }
         }
 
@@ -191,8 +214,13 @@ class Hermes extends Mortal {
     }
 
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
+        restrictions: Restriction[]){
         
+        this.checkRestrictions(turn, tileData,restrictions)           
+        
+        this.validateActions(turn, turnCount, playerCount, tileData)
+
         let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
             playerTurn, turnCount, playerCount)
         

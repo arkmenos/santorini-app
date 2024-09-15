@@ -43,6 +43,9 @@ export const S_BLOCK_Y_POS = 1.555;
 export const S_BLOCK_WIDTH = 1;
 export const DOME_LENGTH = 1;
 export const DOME_Y_POS = 1.725;
+export const DOME_Y_POS_GROUND = 0.37;
+export const DOME_Y_POS_FIRST = 0.8750;
+export const DOME_Y_POS_SECOND = 1.375;
 export const DOME_WIDTH = 1;
 export const PLAYER_POS_GROUND = 0.37;
 export const PLAYER_POS_FIRST_LEVEL = 0.8750;
@@ -148,9 +151,6 @@ ATLAS_VALID_BUILDS.set(tileL, [tileM, domeL]);
 ATLAS_VALID_BUILDS.set(tileM, [tileS, domeM]);
 ATLAS_VALID_BUILDS.set(tileS, [domeD])
 
-
-
-
 export  const POSITIONS: number[][] = new Array<number[]>();
 let x = 0;
 let z = 2;
@@ -165,8 +165,8 @@ for(let row = 4; row >= 0; row--){
 }
 
 export type BoardState = {
-    moveIndicator: {tiles: Tile[], worker: Worker | undefined},
-    previousMoveIndicator: {tiles: Tile[], worker: Worker | undefined},
+    // moveIndicator: {tiles: Tile[], worker: Worker | undefined},
+    // previousMoveIndicator: {tiles: Tile[], worker: Worker | undefined},
     tileData: TileData[],
     workerPositions: WorkerPostion[],
     workerSelected: Worker | undefined,
@@ -179,6 +179,14 @@ export type BoardState = {
     workerCount: number,
     currentGameActions: GameAction[],
     playerPowers:GodIdentifier[],
+    // canUseAtlasPower: boolean,
+    canPlaceBlock: boolean,
+    moveWorkers: WorkerPostion[],
+}
+
+export type MoveIndicators = {
+    tiles: Tile[],
+    // worker: Worker | undefined
 }
 
 export type WorkerPostion = {
@@ -199,57 +207,7 @@ export type BoardData = {
     unusedMBlocks?: number,
     unusedSBlocks?: number,
     unusedDomes?: number,
-}
-
-export const getStartTileData =(): TileData[] => {
-    const result:TileData[] = []
-    for(let i=0; i < 25; i++){
-      result.push({buildings:"E"})
-    }
-    return result;
-  }
-
- export function createTurn(tileData: TileData[], previousTileData: TileData[]):string{
-    let moves = ""
-    let builds = ""
-    tileData.forEach((data, index) => {
-        if(data.buildings && data.buildings !== previousTileData[index]?.buildings){
-            builds += data.buildings + TILES[index] + "/"
-        }
-        if(data.worker && data.worker !== previousTileData[index]?.worker){
-            moves += data.worker +TILES[index] + "/"
-        }
-    })
-    if(builds === ""){
-        builds = "-"
-    }
-    else{
-        builds = builds.substring(0, builds.length - 1)
-    }
-        
-    const result = `${moves.substring(0, moves.length - 1)} ${builds}`
-    console.log("Created Turn: ", result)
-    return result;
-}
-
-export function getWorkerYPositionIndicator(block:Building):number {
-    let result = PLAYER_POS_GROUND;
-    switch (block){
-        case "L":
-            result = PLAYER_POS_FIRST_LEVEL
-            break;
-        case "M":
-            result = PLAYER_POS_SECOND_LEVEL
-            break;
-        case "S":
-            result = PLAYER_POS_THIRD_LEVEL
-            break;
-        case "E":
-            result = PLAYER_POS_GROUND
-            break;
-    }
-
-    return result
+    
 }
 
 export interface BlockProp {
@@ -270,51 +228,3 @@ export interface PopUpProp {
     setSelectedIndex:(arg0:string) => void
 }
 
-export function isMoveAscending(moveAction: Move, tileData: TileData[]): boolean{
-    if(moveAction.from  && moveAction.to){
-        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
-
-        if(fromBlockLevel === "E" && toBlockLevel === "L" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "L" && toBlockLevel === "M" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "M" && toBlockLevel === "S" && !isWorkerOnTile) return true;            
-    }
-
-    return false        
-}
-
-export function isMoveDescending(moveAction: Move, tileData: TileData[]): boolean{
-    if(moveAction.from  && moveAction.to){
-        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
-        
-        if(fromBlockLevel === "L" && toBlockLevel === "E" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "M" && (toBlockLevel === "L" || toBlockLevel === "E")) 
-            return true;
-        if(fromBlockLevel === "S" && (toBlockLevel === "M" || 
-            toBlockLevel === "L" || toBlockLevel === "E") && !isWorkerOnTile) return true;            
-    }
-    return false        
-}
-
-export function isMoveSameLevel(moveAction: Move, tileData:TileData[]): boolean {
-    if(moveAction.from  && moveAction.to){
-        const fromBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const toBlockLevel = tileData[TILES.indexOf(moveAction.from)].buildings
-        const isWorkerOnTile = tileData[TILES.indexOf(moveAction.from)].worker ? true: false
-        
-        if(fromBlockLevel === "E" && toBlockLevel === "E" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "L" && toBlockLevel === "L" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "M" && toBlockLevel === "M" && !isWorkerOnTile) return true;
-        if(fromBlockLevel === "S" && toBlockLevel === "S" && !isWorkerOnTile) return true;
-    }
-    return false;
-}
-
-export function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent,
-    );
-  }

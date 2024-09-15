@@ -23,11 +23,16 @@ class Artemis extends Mortal {
                 if(numActions >= 2)
                 {
                     if(numActions === 3){
-                        if(!(turn.gameActions[1] as Move).worker) {
+                        const secondMove = turn.gameActions[1] as Move
+                        if(!secondMove.worker) {
                             throw new Error("You may move once or twice before building this turn");
                         }
                         if(!(turn.gameActions[2] as Build).building)  {
                             new Error("You may move once or twice before building this turn");
+                        }
+                        
+                        if(firstAction.worker !== secondMove.worker){
+                            throw new Error("Only one worker can move this turn")
                         }
                     }
                 }

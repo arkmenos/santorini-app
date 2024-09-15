@@ -85,7 +85,7 @@ class Demeter extends Mortal{
                 tileData[TILES.indexOf(tempBuilding.tile)].buildings = tempBuilding.building
             }
             if(turn.gameActions.length === 3){
-                const secondBuilding = turn.gameActions[1] as Build
+                const secondBuilding = turn.gameActions[2] as Build
                 if(secondBuilding.building){
                     tileData[TILES.indexOf(secondBuilding.tile)].buildings = secondBuilding.building
                 }

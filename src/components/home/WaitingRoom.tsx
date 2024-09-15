@@ -184,7 +184,7 @@ function WaitingRoom({playerInfo, opponents, setPhase, setPlayerInfo, setOpponen
                         <h4>Select a Play Mode</h4>
                             {
                                 PLAY_MODES.map(m => ( 
-                                    m === "No Powers" &&
+                                    // m === "No Powers" &&
                                     <div key={uuidV4()}>    
                                         <input type="radio" id={m} name="play_mode" value={m} key={uuidV4()}                                                     
                                                 checked={m===playMode} 

@@ -1,5 +1,7 @@
-import { Build, isMoveAscending, Move, Player, TileData, Turn } from "../../../types/Types";
+import { Build, Move, Player, Tile, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+import { isMoveAscending } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
+import Restriction from "../restrictions/Restrictions";
 
 class Prometheus extends Mortal {
     constructor(){
@@ -34,7 +36,7 @@ class Prometheus extends Mortal {
                     if(!firstAction.building || !secondAction.worker || !thirdAction.building) 
                         throw new Error("If your Worker does not move up, it may build both before and after moving");
 
-                    if(isMoveAscending(secondAction, tileData))
+                    if(isMoveAscending(secondAction, tileData) || firstAction.tile === secondAction.to)
                         throw new Error("If your Worker does not move up, it may build both before and after moving");
                 }
             }
@@ -48,6 +50,54 @@ class Prometheus extends Mortal {
         else if(turn.gameActions.length === 3) moveAction = turn.gameActions[1] as Move;
         
         if(moveAction && moveAction.worker) this.isValidMove(moveAction, tileData, playerTurn);
+    }
+
+    private performPrometheusMoveAction(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){
+
+            const numActions = turn.gameActions.length
+            let isPrimaryWinConditionMet = false
+            if(numActions === 2)
+                return this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
+                    playerTurn, turnCount, playerCount);
+            else if(numActions === 3){
+                const moveAction = turn.gameActions[1] as Move
+                tileData[TILES.indexOf(moveAction.to)].worker = moveAction.worker
+                if(moveAction.from) {
+                    if(!tileData[TILES.indexOf(moveAction.from)].buildings){
+                        tileData[TILES.indexOf(moveAction.from)].buildings = "E"
+                    }
+                    delete tileData[TILES.indexOf(moveAction.from)].worker
+                }
+                workerPositionsMap.set(moveAction.worker, moveAction.to)
+                workerPositions.push(moveAction.to)
+                
+                if(this.isPrimaryWinconditionMet(moveAction, tileData)) isPrimaryWinConditionMet =true;
+            }         
+            return {tileData:tileData, workerPositionsMap:workerPositionsMap, 
+                workerPositions:workerPositions, isPrimaryWinConditionMet:isPrimaryWinConditionMet}
+    }
+
+    private performPrometheusBuildAction(turn: Turn, tileData: TileData [], workerPositionsMap: Map<Worker, Tile>, 
+        workerPositions: Tile[],turnCount:number, playerCount:number){
+            const numActions = turn.gameActions.length           
+            if(numActions === 2)
+                return this.performBuildAction(turn, tileData, workerPositionsMap, workerPositions, 
+                turnCount, playerCount)
+            else if(numActions === 3){
+                this.validateBuildActions(turn, tileData, turnCount, playerCount)
+                const firstBuild = turn.gameActions[0] as Build
+                const secondBuild = turn.gameActions[2] as Build
+
+                if(firstBuild.building)
+                    tileData[TILES.indexOf(firstBuild.tile)].buildings = firstBuild.building
+                if(secondBuild.building)
+                    tileData[TILES.indexOf(secondBuild.tile)].buildings = secondBuild.building
+                
+            }
+
+            return {tileData:tileData, workerPositionsMap:workerPositionsMap, 
+                workerPositions:workerPositions, isPrimaryWinConditionMet:false}
     }
 
     protected validateBuildActions(turn: Turn, tileData: TileData[], turnCount:number, playerCount: number){
@@ -71,13 +121,39 @@ class Prometheus extends Mortal {
                 if(!secondBuildAction.building){
                     throw new Error("You must move once and may build an additional time not on the same space this turn")
                 }
-                if(secondBuildAction.building && buildAction.tile === secondBuildAction.tile){
-                    throw new Error ("Your additional build cannot be on the same space as the first")
+                if(buildAction.tile === secondBuildAction.tile){
+                    if(!VALID_BUILDS.get(buildAction.building)?.includes(secondBuildAction.building)){
+                        throw new Error (`Invalid build from ${buildAction.building} to ${secondBuildAction.building}`)
+                    }
                 }
-                this.isBuildValid(secondBuildAction, moveAction, tileData, turnCount, playerCount);
+                else{
+                    this.isBuildValid(secondBuildAction, moveAction, tileData, turnCount, playerCount);
+                }
             }            
         }
     }
+
+
+
+    public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
+        restrictions: Restriction[]){
+        
+        this.checkRestrictions(turn, tileData,restrictions)       
+
+        this.validateActions(turn, turnCount, playerCount, tileData)
+        let turnData = this.performPrometheusMoveAction(turn, tileData, workerPositionsMap, workerPositions,
+            playerTurn, turnCount, playerCount)
+        
+        if(turnData.isPrimaryWinConditionMet){
+            return turnData;
+        }
+
+        turnData = this.performPrometheusBuildAction(turn, turnData.tileData, turnData.workerPositionsMap,
+            turnData.workerPositions, turnCount, playerCount);
+        
+        return turnData;
+    }    
 }
 
 export default Prometheus

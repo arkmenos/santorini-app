@@ -1,7 +1,6 @@
 import {
   BLOCKS,
   DOMES,
-  getStartTileData,
   GodIdentifier,
   Player,
   PLAYER_POS_FIRST_LEVEL,
@@ -16,6 +15,7 @@ import {
   WorkerPostion,
   WORKERS,
 } from "../../types/Types.js";
+import { getStartTileData } from "../../Utility/Utility.js";
 
 export const GenerateBoardData = (SAN: string) => {
   const tileData = getStartTileData();
@@ -125,24 +125,27 @@ export const GenerateBoardData = (SAN: string) => {
 
             break;
           case "F":
-            // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Large position={[POSITIONS[index][0],L_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'F', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "F",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "G":
-            // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Large position={[POSITIONS[index][0],L_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Medium position={[POSITIONS[index][0],M_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'G', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "G",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "H":
-             // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'H', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "H",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "X":

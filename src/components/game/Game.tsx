@@ -14,7 +14,7 @@ import TurnInfo from "./TurnInfo"
 function Game({playerInfo, opponents}:GameProp){
     const santorini = useRef<Santorini>(null!)
     const [san, setSan] = useState("")
-    const [isturn, setIsTurn] = useState(false)
+    const [isTurn, setIsTurn] = useState(false)
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -84,11 +84,11 @@ function Game({playerInfo, opponents}:GameProp){
     function getWinner():string {
         if(!santorini.current) return ""
         const pturn = santorini.current.getWinner();
-        if(playerInfo.type === pturn) return playerInfo.name
+        if(playerInfo.type === pturn) return "You Win!!!"
 
         const foundPlayer = opponents.find(p => p.type === pturn)        
         if(!foundPlayer) return "";
-        return foundPlayer.name;
+        return foundPlayer.name + " Wins!!!";
     }
 
     function opponentTurn(turn: Turn){
@@ -124,7 +124,7 @@ function Game({playerInfo, opponents}:GameProp){
 
         }catch(err){
             console.log((err as Error).message, err);
-            toaster.push(<Message type="warning" ><strong>{(err as Error).message}</strong></Message>, {placement: 'topCenter'})
+            toaster.push(<Message type="warning" ><strong>{(err as Error).message}</strong></Message>, {duration: 4000,placement: 'topCenter'})
             return false
         }
 
@@ -150,13 +150,14 @@ function Game({playerInfo, opponents}:GameProp){
             <TurnInfo opponents={opponents} player={playerInfo} 
                 currentPlayerTurn={currentPlayerTurn} />
             
-            <SantoriniBoard SAN={san} onTurnEnd={turnEnd} areWorkersMoveable={isturn}/>
+            {/* {isTurn && <GamePlayControls player={playerInfo} onTurnEnd={turnEnd} />} */}
+            <SantoriniBoard SAN={san} onTurnEnd={turnEnd} isTurn={isTurn} player={playerInfo}/>
             
             <Modal open={open} onClose={handleClose}>
                 <Modal.Header>
                     <Modal.Title>Game Over</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{getWinner()} is the Winner!!!!</Modal.Body>
+                <Modal.Body>{getWinner()}</Modal.Body>
                 <Modal.Footer>
                     <Button onClick={handleClose} appearance="primary">Ok</Button>
                 </Modal.Footer>

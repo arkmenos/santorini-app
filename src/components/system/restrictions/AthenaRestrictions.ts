@@ -1,4 +1,5 @@
-import { isMoveAscending, Move, TileData } from "../../../types/Types";
+import { Move, TileData, Turn } from "../../../types/Types";
+import { isMoveAscending } from "../../../Utility/Utility";
 import Restriction from "./Restrictions";
 
 class AthenaRestrictions extends Restriction {     
@@ -7,10 +8,15 @@ class AthenaRestrictions extends Restriction {
         this.setGodIdentifier("III")
      }
 
-     public isMoveRestricted(move: Move, tileData: TileData[]): boolean {
-         if(isMoveAscending(move, tileData)){
-            throw new Error('Athena god power is active. Opponent Workers cannot move up this turn')
-         }
+     public isMoveRestricted(turn: Turn, tileData: TileData[]): boolean {
+         turn.gameActions.forEach(action => {
+            if((action as Move).worker){
+               if(isMoveAscending(action as Move, tileData)){
+                  throw new Error('Athena god power is active. Opponent Workers cannot move up this turn')
+               }
+            }
+         })
+         
         return false
     }
 }

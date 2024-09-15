@@ -1,4 +1,4 @@
-import { GodIdentifier, Move, TileData, Turn } from "../../../types/Types";
+import { GodIdentifier, TileData, Turn } from "../../../types/Types";
 
 abstract class Restriction {
     inPlay:boolean;
@@ -16,7 +16,7 @@ abstract class Restriction {
     public getGodIdentifier():GodIdentifier|null{
         return this.godIdentifier
     }
-    public abstract isMoveRestricted(move: Move, tileData: TileData[]): boolean;
+    public abstract isMoveRestricted(turn: Turn, tileData: TileData[]): boolean;
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public isBuildRestricted(_: Turn, __: TileData[]): boolean {
@@ -25,6 +25,10 @@ abstract class Restriction {
 
     public setActive(active: boolean){
         this.active = active
+    }
+
+    public getActive():boolean {
+        return this.active
     }
 }
 

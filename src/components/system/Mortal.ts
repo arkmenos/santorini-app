@@ -1,6 +1,5 @@
-import { GodIdentifier, Player, TileData, Move, TILE_ADJACENCY, TILES, Building, 
-    VALID_MOVEMENTS, Build, VALID_BUILDS, Turn, Tile, 
-    Worker} from "../../types/Types";
+
+import { Build, Building, GodIdentifier, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, VALID_MOVEMENTS, Worker } from "../../types/Types";
 import NoRestriction from "./restrictions/NoRestriction";
 import Restriction from "./restrictions/Restrictions";
 
@@ -197,12 +196,9 @@ class Mortal {
         workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
         restrictions: Restriction[]){
         
-        restrictions.forEach(res => {
-            if(res.getGodIdentifier() !== this.getIdentifier()){
-                res.isMoveRestricted(turn.gameActions[0] as Move, tileData);
-                res.isBuildRestricted(turn, tileData)
-            }
-        })
+        this.checkRestrictions(turn, tileData,restrictions)        
+
+        this.validateActions(turn, turnCount, playerCount, tileData)
         let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
             playerTurn, turnCount, playerCount)
         
@@ -215,6 +211,15 @@ class Mortal {
         
         return turnData;
     }    
+
+    protected checkRestrictions(turn: Turn, tileData: TileData[], restrictions: Restriction[]){
+        restrictions.forEach(res => {
+            if(res.getGodIdentifier() !== this.getIdentifier() && res.getActive()){               
+                res.isMoveRestricted(turn, tileData);
+                res.isBuildRestricted(turn, tileData)
+            }
+        })
+    }
   
 }
 

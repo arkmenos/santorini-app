@@ -1,4 +1,4 @@
-import { Build, Move, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
+import { Build, Move, Tile, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
 import Mortal from "../Mortal";
 
 
@@ -60,10 +60,18 @@ class Hephaestus extends Mortal{
                     if(!secondBuildAction.building){
                         throw new Error("You must move once and may build an additional time not on the same space this turn")
                     }
+                    if(secondBuildAction.building === "D"){
+                        throw new Error("Your second build can't be a dome. Refer to god powers")
+                    }
                     if(secondBuildAction.building && buildAction.tile !== secondBuildAction.tile){
                         throw new Error ("Your additional build cannot be on the same space as the first")
                     }
-                    this.isBuildValid(secondBuildAction, moveAction, tileData, turnCount, playerCount);
+
+                    if(!VALID_BUILDS.get(buildAction.building)?.includes(secondBuildAction.building)){
+                        throw new Error (`Your second building is not valid: ${buildAction.building} 
+                            to ${secondBuildAction.building}` )
+                    }
+                    // this.isBuildValid(secondBuildAction, moveAction, tileData, turnCount, playerCount);
                 }
             }
         }
@@ -78,7 +86,7 @@ class Hephaestus extends Mortal{
                 tileData[TILES.indexOf(firstBuilding.tile)].buildings = firstBuilding.building
             }
             if(turn.gameActions.length === 3){
-                const secondBuilding = turn.gameActions[1] as Build
+                const secondBuilding = turn.gameActions[2] as Build
                 if(secondBuilding.building){
                     tileData[TILES.indexOf(secondBuilding.tile)].buildings = secondBuilding.building
                 }
