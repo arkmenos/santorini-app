@@ -12,7 +12,7 @@ import { Message, useToaster } from "rsuite";
 import { getMinotaurPushDestinationTile } from "../../Utility/Utility";
 
 interface IndicatorProp{
-    areWorkersMoveable:boolean,
+    isTurn:boolean,
     player:PlayerInfo,
     moveIndicators:Tile[],
     moveWorkerIndicators: WorkerPostion[],
@@ -21,7 +21,7 @@ interface IndicatorProp{
     setMoveWorkerIndicators:(workerPositions:WorkerPostion[]) =>void,
     setSelectedWorker:(worker:Worker|null) =>void,
 }
-function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, moveWorkerIndicators,
+function MoveIndicatorOnBoard ({isTurn, player, moveIndicators, moveWorkerIndicators,
     selectedWorker, setMoveIndicators, setMoveWorkerIndicators, setSelectedWorker}:IndicatorProp){
     const toaster = useToaster()
         
@@ -68,17 +68,19 @@ function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, move
     function handleClick(e: ThreeEvent<MouseEvent>, position: number[], tile: Tile){
         e.stopPropagation()
         // console.log("Clicked on a move indicator", areWorkersMoveable)
-        if(!areWorkersMoveable) {
+        if(!isTurn) {
             // console.log("Not your turn")
             toaster.push(<Message>Not your turn</Message>, {placement: 'topCenter', duration:2500})
              return
         }
         // worker placements
+        
         const newPos = [...position]
         newPos[1] = getWorkerYPositionIndicator("E")
         const workerPos: WorkerPostion = {position: newPos, tile: tile }
         // console.log("workerCount ", workerCount)
         if(turnCount === 1){
+            if(tileData[TILES.indexOf(tile)].worker) return;
             if(workerCount === 1) {
                 workerPos.worker = "X" as Worker 
                 dispatch(incrementWorkerCount())
@@ -94,6 +96,7 @@ function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, move
             
             return;
         }else if(turnCount === 2){
+            if(tileData[TILES.indexOf(tile)].worker) return;
             if(workerCount === 1){
                 workerPos.worker = "Y" as Worker            
                 dispatch(incrementWorkerCount())
@@ -108,6 +111,7 @@ function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, move
             }
             return;
         }else if(turnCount === 3 && playerCount === 3){
+            if(tileData[TILES.indexOf(tile)].worker) return;
             if(workerCount === 1) {
                 workerPos.worker = "Z" as Worker   
                 dispatch(incrementWorkerCount())
@@ -137,10 +141,10 @@ function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, move
                 {from: previousPos.tile, to: tile, worker:selectedWorkerPos.worker}) as Move))
             dispatch(setWorkerPosition({worker:selectedWorkerPos.worker, position:newPos, tile: tile}))
 
-            //Atlas worker swap
             const workerBeingSwapped = moveWorkerIndicators.find (w => {return w.tile === tile})
             console.log("moveWorkerIndicators", moveWorkerIndicators, workerBeingSwapped)
             if(player.identifier === "I" && workerBeingSwapped){
+                //Atlas worker swap
                 console.log("Can Swap")
                 dispatch(addCurrentGameAction((
                     {from: workerBeingSwapped.tile, to: selectedWorkerPos.tile, worker:workerBeingSwapped.worker}) as Move))
@@ -148,6 +152,7 @@ function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, move
                     tile: selectedWorkerPos.tile}))
             }
             else if(player.identifier === "VIII" && workerBeingSwapped){
+                //Minotaur push
                 const pushDestinationTile = getMinotaurPushDestinationTile(selectedWorkerPos.tile,
                     workerBeingSwapped.tile, tileData);
                 

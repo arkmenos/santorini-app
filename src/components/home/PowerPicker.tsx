@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GamePlayer, GameStartPhase, GodCardInfo,  GodIdentifier,  PlayerInfo,  SIMPLE_GOD_POWERS } from "../../types/Types";
+import { AVAILABLE_POWERS, GamePlayer, GameStartPhase, GodCardInfo,  GodIdentifier,  PlayerInfo,  SIMPLE_GOD_POWERS, TWO_PLAYER_ONLY } from "../../types/Types";
 import { ALL_GODS_INFO } from "../godCard/GodCardsInformation";
 import GodCard from "../godCard/GodCard";
 import {v4 as uuid}from "uuid";
@@ -25,7 +25,11 @@ function PowerPicker({player, opponents, setPlayerInfo: setPlayer, setOpponents,
 
     useEffect(()=> {
         const tempPowers:GodCardInfo[]  = [];
-         SIMPLE_GOD_POWERS.filter(p => {
+        let godPowersUsed:GodIdentifier[] = [...SIMPLE_GOD_POWERS, ...AVAILABLE_POWERS]
+        if(opponents.length > 1){
+            godPowersUsed = godPowersUsed.filter(p => !TWO_PLAYER_ONLY.includes(p))
+        }
+        godPowersUsed.filter(p => {
             const g = ALL_GODS_INFO.find(g => g.identifier === p)
            g && tempPowers.push(g)
         })

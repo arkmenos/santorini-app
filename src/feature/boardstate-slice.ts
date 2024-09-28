@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { BoardState, Build, GodIdentifier, Move, TileDataUpdator, TILES, WorkerPostion } from "../types/Types"
+import { BoardState, Build, GameAction, GodIdentifier, Move, TileDataUpdator, TILES, WorkerPostion } from "../types/Types"
 
 const initialState = {
     // moveIndicator: {
@@ -178,7 +178,7 @@ const boardState = createSlice({
                     // state.canUseAtlasPower = false;
                 }
         },
-        addCurrentGameAction(state, action:PayloadAction<Move|Build>){
+        addCurrentGameAction(state, action:PayloadAction<GameAction>){
             state.currentGameActions = [...state.currentGameActions, action.payload]
         },
         // addCurrentMove(state, action:PayloadAction<Move>){

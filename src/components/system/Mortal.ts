@@ -35,7 +35,9 @@ class Mortal {
         if(turnCount <= 2 || (turnCount === 3 && playerCount === 3)){
             if(turn.gameActions.length !== 2) throw new Error("Must place 2 workers on board this turn")
             const seconedMoveAction = turn.gameActions[1] as Move
-            if(!seconedMoveAction.worker) throw new Error("Must place 2 workers on board this turn")
+            if(!seconedMoveAction.worker) throw new Error("Must place 2 workers on board this turn");
+            if(moveAction.to === seconedMoveAction.to) throw new Error("Must place workers on separate tiles")
+            
         }else{    
             //Worker move and build phases            
             if(turn.gameActions.length !== 2 && turn.gameActions.length !== 1){
@@ -63,8 +65,9 @@ class Mortal {
                 const fromBlockLevel = tempFromTile.buildings ? tempFromTile.buildings : "E" as Building
                 const toBlockLevel = tempToTile.buildings ? tempToTile.buildings  : 'E' as Building
 
-                // console.log("Temp Data Tiles : ", tempTileData, tempFromTile, tempToTile)
-                // console.log("fromBlockLevel toBlockLevel", fromBlockLevel, toBlockLevel)
+                console.log("Temp Data Tiles : ", tileData, tempFromTile, tempToTile)
+                console.log("fromBlockLevel toBlockLevel tempToTile.worker", 
+                    fromBlockLevel, toBlockLevel, tempToTile.worker)
                 if(!VALID_MOVEMENTS.get(fromBlockLevel)?.includes(toBlockLevel) || tempToTile.worker){                
                     throw new Error(`Invalid move ${moveAction.worker} from ${moveAction.from} to ${moveAction.to}`);             
                 } 
@@ -114,8 +117,6 @@ class Mortal {
         else{
             throw new Error('You must move and build this turn')
         }
-
-        return false;
     }
     
     protected validateBuildActions(turn: Turn, tileData: TileData[], turnCount:number, playerCount: number){

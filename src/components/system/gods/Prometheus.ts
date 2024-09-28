@@ -35,8 +35,13 @@ class Prometheus extends Mortal {
                 
                     if(!firstAction.building || !secondAction.worker || !thirdAction.building) 
                         throw new Error("If your Worker does not move up, it may build both before and after moving");
-
-                    if(isMoveAscending(secondAction, tileData) || firstAction.tile === secondAction.to)
+                    
+                    //Update tileData for validation
+                    const tempTileData = JSON.parse(JSON.stringify(tileData))
+                    console.log("TileData before", tempTileData[TILES.indexOf(firstAction.tile)].buildings, tempTileData)
+                    tempTileData[TILES.indexOf(firstAction.tile)].buildings =  firstAction.building
+                    console.log("Prometheus firstAction", firstAction, tempTileData[TILES.indexOf(firstAction.tile)].buildings, tempTileData )
+                    if(isMoveAscending(secondAction, tempTileData))
                         throw new Error("If your Worker does not move up, it may build both before and after moving");
                 }
             }

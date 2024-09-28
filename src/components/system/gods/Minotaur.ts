@@ -15,8 +15,8 @@ class Minotaur extends Mortal {
 
             if(firstMoveAction.worker && secondMoveAction.worker){
                 if(firstMoveAction.to !== secondMoveAction.from) return false;
-                if(tileData[TILES.indexOf(secondMoveAction.to)])
-                if(firstMoveAction.from){
+               
+                if(firstMoveAction.from && tileData[TILES.indexOf(secondMoveAction.to)]){
 
                     const pushedDestTile = getMinotaurPushDestinationTile(firstMoveAction.from, 
                         firstMoveAction.to, tileData)
@@ -27,6 +27,7 @@ class Minotaur extends Mortal {
                     if(destBuilding && DOMES.includes(destBuilding)){
                         throw new Error('Pushed opponent must be pushed onto a non domed building.')
                     }
+                    return true
                 }
             }
         }

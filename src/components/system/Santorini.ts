@@ -3,6 +3,7 @@ import {  START,  Worker,  WORKERS,  BLOCKS,  DOMES,  TILES,  Tile,  MAX_DOMES, 
   TILE_ADJACENCY,  VALID_MOVEMENTS,  Player,  PLAYERS,  GODIDENTIFIERS,
   } from "../../types/Types";
 import Apollo from "./gods/Apollo";
+import Ares from "./gods/Ares";
 import Artemis from "./gods/Artemis";
 import Athena from "./gods/Athena";
 import Atlas from "./gods/Atlas";
@@ -13,6 +14,7 @@ import Hermes from "./gods/Hermes";
 import Minotaur from "./gods/Minotaur";
 import Pan from "./gods/Pan";
 import Prometheus from "./gods/Prometheus";
+import Zeus from "./gods/Zeus";
 import Mortal from "./Mortal";
 import Restriction from "./restrictions/Restrictions";
 
@@ -502,7 +504,7 @@ class Santorini {
       throw new Error(`Invalid notation on Remaining Blocks Field: ${blocks}`);
     }
 
-    //Upade destroyed pieces (workers, blocks and tokens)
+    //Update destroyed pieces (workers, blocks and tokens)
     //Validate number of blocks and domes in play and destroyed
     if (tokens[5] !== "-") {
       const destroyedPiece = tokens[5].split("/");
@@ -717,9 +719,15 @@ class Santorini {
           case "X":
             this.playerPowers.push( new Prometheus())
             break;
+          case "XII":
+            this.playerPowers.push( new Ares())
+            break;
           case "XVI":
             this.playerPowers.push( new Chronus())
             this.isChronusInPlay = true;
+            break;
+          case "XXX":
+            this.playerPowers.push(new Zeus())
             break;
         }
       }

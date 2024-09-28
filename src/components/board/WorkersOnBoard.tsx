@@ -15,7 +15,7 @@ import { ThreeEvent } from "@react-three/fiber";
 import { getMinotaurPushDestinationTile } from "../../Utility/Utility.js";
 
 interface WorkersProp {
-    areWorkersMoveable:boolean,
+    isTurn:boolean,
     player:PlayerInfo,
     moveIndicators:Tile[],
     moveWorkerIndicators: WorkerPostion[],
@@ -25,7 +25,7 @@ interface WorkersProp {
     setSelectedWorker:(worker:Worker|null) =>void,
 }
 
-const WorkersOnBoard = ({areWorkersMoveable, player, moveIndicators,moveWorkerIndicators, 
+const WorkersOnBoard = ({isTurn, player, moveIndicators,moveWorkerIndicators, 
     selectedWorker, setMoveIndicators, setMoveWorkerIndicators, setSelectedWorker}:WorkersProp) => {
     
     const toaster = useToaster()
@@ -80,12 +80,12 @@ const WorkersOnBoard = ({areWorkersMoveable, player, moveIndicators,moveWorkerIn
     
     const handleClick = (e: ThreeEvent<MouseEvent>, workerPos: WorkerPostion) => {
         e.stopPropagation()
-        if(!areWorkersMoveable) {
+        if(!isTurn) {
             // console.log("Not your turn")
             toaster.push(<Message>Not your turn</Message>, {placement: 'topCenter', duration:2500})
              return
         }
-        if(areWorkersMoveable && ((turnCount > 2 && playerCount === 2) || (playerCount === 3 && turnCount > 3))){        
+        if(isTurn && ((turnCount > 2 && playerCount === 2) || (playerCount === 3 && turnCount > 3))){        
             if(!workerPos.tile) return
 
             console.log("MoveIndicator old new", moveIndicators, moveWorkerIndicators)

@@ -5,7 +5,7 @@ export type Player = 'X' | 'Y' | 'Z' ;
 export type Worker = 'X' | 'x' | 'Y' | 'y' | 'Z' | 'z';
 export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X'
     | 'XI' | 'XII' | 'XIII' | 'XIV' | 'XV' | 'XVI' | 'XVII' | 'XVIII' | 'XIX' | 'XX'
-    | 'XXI' | 'XXII' | 'XXIII' | 'XXIV' | 'XXV' | 'XXVI' | 'XXVII' | 'XXVIII' | 'XXIX' | 'XXX';
+    | 'XXI' | 'XXII' | 'XXIII' | 'XXIV' | 'XXV' | 'XXVI' | 'XXVII' | 'XXVIII' | 'XXIX' | 'XXX'| '-';
 export type GodToken = 'W' | 'P' | 'p' | 'C' | 'T' | 'E' | 'e' | 'R' | 'S' | 'A' | 'O';
 export type Tile = 'a5'|'b5'|'c5'| 'd5'| 'e5'|'a4'|'b4'|'c4'| 'd4'| 'e4'|'a3'|'b3'|'c3'| 'd3'| 'e3'|'a2'|'b2'|'c2'| 'd2'| 'e2'|'a1'|'b1'|'c1'| 'd1'| 'e1';
 
@@ -19,12 +19,12 @@ export const PLAYERS: Player[] = ['X', 'Y', 'Z'];
 export const WORKERS = ['X' , 'x' , 'Y' , 'y' , 'Z' , 'z'];
 export const GODS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'];
 export const GODTOKENS = ['W' , 'P' , 'p' , 'C' , 'T', 'G', 'g'  , 'R' , 'S' , 'A' , 'O'];
-export const GODIDENTIFIERS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'
+export const GODIDENTIFIERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'
     , 'XI' , 'XII' , 'XIII' , 'XIV' , 'XV' , 'XVI' , 'XVII' , 'XVIII' , 'XIX' , 'XX'
     , 'XXI' , 'XXII' , 'XXIII' , 'XXIV' , 'XXV' , 'XXVI' , 'XXVII' , 'XXVIII' , 'XXIX' , 'XXX', '-'];
-export const TWOPLAYERONLY = ['XI', 'XVI', 'XVII'];
-export const UNAVAILABLE_POWERS = ['XIV', 'XXV'];
-export const AVAILABLE_POWERS = ['IX', 'XVI'];
+export const TWO_PLAYER_ONLY:GodIdentifier[] = ['XI', 'XVI', 'XVII'];
+export const UNAVAILABLE_POWERS:GodIdentifier[] = ['XIV', 'XXV'];
+export const AVAILABLE_POWERS:GodIdentifier[] = ['XII','XVI','XXX'];
 export const SIMPLE_GOD_POWERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X']
 
 export const MAX_L_BLOCKS = 22;
@@ -59,10 +59,12 @@ export type TileData = {
     worker?: Worker | undefined,
     godToken?: GodToken | undefined,
 }
+
 export type TileDataUpdator ={
     index:number,
     data : TileData
 }
+
 export type Move = {
     from: Tile | undefined,
     to:  Tile,
@@ -73,11 +75,16 @@ export type Build = {
     building: Building,
     tile: Tile 
 }
+
+export type RemoveBuilding = {
+    tile: Tile
+}
+
 export type Turn = {
     gameActions: GameAction[]
 }
 
-export type GameAction = Move | Build
+export type GameAction = Move | Build | RemoveBuilding
 
 export type GamePlayer = Player | 'S'
 
@@ -150,6 +157,12 @@ ATLAS_VALID_BUILDS.set(tileE, [tileL, domeE]);
 ATLAS_VALID_BUILDS.set(tileL, [tileM, domeL]);
 ATLAS_VALID_BUILDS.set(tileM, [tileS, domeM]);
 ATLAS_VALID_BUILDS.set(tileS, [domeD])
+
+export const ARES_VALID_REMOVE: Map<Building, Building> = new Map();
+ARES_VALID_REMOVE.set(tileL, tileE);
+ARES_VALID_REMOVE.set(tileM, tileL);
+ARES_VALID_REMOVE.set(tileS, tileM);
+
 
 export  const POSITIONS: number[][] = new Array<number[]>();
 let x = 0;

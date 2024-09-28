@@ -30,7 +30,7 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardP
     const [moveIndicators, setMoveIndicators] = useState<Tile[]>([])
     const [moveWorkerIndicators, setMoveWorkerIndicators] = useState<WorkerPostion[]>([])
     const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null)
-    const [canUseAtlasPower, setCanUseAtlasPower] = useState(false)
+    const [canUseSpecialPower, setCanUseSpecialPower] = useState(false)
     // const [prevMoveIndicators, setPrevMoveIndicators] = useState<WorkerPostion[]>([])
     const dispatch = useAppDispatch();
     // const canBuild = useAppSelector((state) => state.boardState.canBuild)
@@ -93,7 +93,7 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardP
                 <directionalLight position={[0,0,2]} intensity={0.8}  />
                 <ambientLight/>
                 <Board key={uuidv4()}>
-                    <WorkersOnBoard areWorkersMoveable={isTurn} player={player} 
+                    <WorkersOnBoard isTurn={isTurn} player={player} 
                         moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
                         moveWorkerIndicators={moveWorkerIndicators} 
                         selectedWorker={selectedWorker}
@@ -102,17 +102,17 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardP
                         
                         />
 
-                    <MoveIndicatorOnBoard areWorkersMoveable={isTurn} player={player}
+                    <MoveIndicatorOnBoard isTurn={isTurn} player={player}
                         moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
                         moveWorkerIndicators={moveWorkerIndicators} 
                         setMoveWorkerIndicators={setMoveWorkerIndicators}
                         selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker}/>    
 
-                    <TileBlocksOnBoard selectedWorker={selectedWorker} 
-                        setSelectedWorker={setSelectedWorker}  
+                    <TileBlocksOnBoard selectedWorker={selectedWorker} player={player}
+                        isTurn={isTurn}  setSelectedWorker={setSelectedWorker}  
                         setMoveIndicators={setMoveIndicators}
                         setMoveWorkerIndicators={setMoveWorkerIndicators}
-                        canUseAtlasPower={canUseAtlasPower}  setCanUseAtlasPower={setCanUseAtlasPower}
+                        canUseSpecialPower={canUseSpecialPower}  setCanUseSpecialPower={setCanUseSpecialPower}
 
                         />  
                     <BoardCoordinates />
@@ -125,7 +125,7 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardP
             {isTurn && <GamePlayControls player={player} onTurnEnd={onTurnEnd} 
                 moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
                 selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker}
-                canUseAtlasPower={canUseAtlasPower}  setCanUseAtlasPower={setCanUseAtlasPower}/>}
+                canUseSpecialPower={canUseSpecialPower}  setCanUseSpecialPower={setCanUseSpecialPower}/>}
         </div>
     )
 }

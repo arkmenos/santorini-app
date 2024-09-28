@@ -8,14 +8,14 @@ interface GamePlaycontrolsProp {
     player: PlayerInfo,
     moveIndicators: Tile[],
     selectedWorker: Worker | null,
-    canUseAtlasPower: boolean,
+    canUseSpecialPower: boolean,
     onTurnEnd?: (move:Turn) => boolean|Error,
     setMoveIndicators: (ind: Tile[]) => void,
     setSelectedWorker: (worker: Worker|null) => void,
-    setCanUseAtlasPower: (atlas: boolean) => void,
+    setCanUseSpecialPower: (atlas: boolean) => void,
 }
 function GamePlayControls({player, onTurnEnd = () => true, 
-    canUseAtlasPower, setMoveIndicators, setSelectedWorker, setCanUseAtlasPower}:GamePlaycontrolsProp ){
+    canUseSpecialPower, setMoveIndicators, setSelectedWorker, setCanUseSpecialPower}:GamePlaycontrolsProp ){
 
     const canBuild = useAppSelector((state) => state.boardState.canBuild)
     // const canUseAtlasPower = useAppSelector((state) => state.boardState.canUseAtlasPower)
@@ -34,15 +34,10 @@ function GamePlayControls({player, onTurnEnd = () => true,
 
     const handlePower = () => {
         console.log("Power clicked 1")
-        if(player.identifier === "IV"){
+        if(player.identifier === "IV" || player.identifier === "XII"){
             console.log("Power clicked")
-            if(!canUseAtlasPower)  {
-                setCanUseAtlasPower(true)
-                // console.log("Power ready!!  canBuild  canUseAtlasPower", canBuild, canUseAtlasPower)
-                // setPowerButton("power-btn-clicked")
-                // if(canBuild)  dispatch(setCanBuild(false));
-                // dispatch(setCanUseAtlasPower(true))
-                // console.log("Power SET!!  canBuild  canUseAtlasPower", canBuild, canUseAtlasPower)
+            if(!canUseSpecialPower)  {
+                setCanUseSpecialPower(true)
             }
         }
     }
@@ -62,7 +57,7 @@ function GamePlayControls({player, onTurnEnd = () => true,
             dispatch(undoTurn())
             setMoveIndicators([])
             setSelectedWorker(null)
-            setCanUseAtlasPower(false)
+            setCanUseSpecialPower(false)
         }    
         dispatch(clearCurrentTurnData())           
     }
@@ -73,17 +68,17 @@ function GamePlayControls({player, onTurnEnd = () => true,
         // setPowerButton("power-btn")
         setMoveIndicators([])
         setSelectedWorker(null)
-        setCanUseAtlasPower(false)
+        setCanUseSpecialPower(false)
     }
 
     const hasSpecialGodPower = () => {
-        if(player.identifier === "IV") return true
+        if(player.identifier === "IV" || player.identifier === "XII") return true
         return false;
     }
 
     return (
         <div className="affix" >                
-        {canBuild && hasSpecialGodPower() && <button className="power-btn"
+        {(canBuild && hasSpecialGodPower()) && <button className="power-btn"
            onClick={() => handlePower()}> <GiPowerLightning />God Power</button>}
         {canBuild && <button className="build-btn" 
              onClick={() => handleBuild()}>Build</button> }
