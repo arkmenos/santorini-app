@@ -1,7 +1,7 @@
 import {
   BLOCKS,
   DOMES,
-  getStartTileData,
+  GodIdentifier,
   Player,
   PLAYER_POS_FIRST_LEVEL,
   PLAYER_POS_GROUND,
@@ -15,6 +15,7 @@ import {
   WorkerPostion,
   WORKERS,
 } from "../../types/Types.js";
+import { getStartTileData } from "../../Utility/Utility.js";
 
 export const GenerateBoardData = (SAN: string) => {
   const tileData = getStartTileData();
@@ -22,6 +23,7 @@ export const GenerateBoardData = (SAN: string) => {
   let turnCount = 1;
   let playerCount = 2;
   const workerPositions:WorkerPostion[] = []
+  let playerPowers:GodIdentifier[] = []
   
   
   // console.log("validate SAN")
@@ -31,6 +33,13 @@ export const GenerateBoardData = (SAN: string) => {
     throw new Error("Invalid notation: must contain 7 or 8 space-delimited fields");
   }
 
+  //set Player Powers
+  if(tokens[3] !== "-"){
+    const identifiers = tokens[3].split("/")
+    if(identifiers.length > 0){
+      playerPowers = [...identifiers as GodIdentifier[]]      
+    }
+  }
   //set turn count
   if(tokens[7]){
     const tempTurn = parseInt(tokens[7])
@@ -116,24 +125,27 @@ export const GenerateBoardData = (SAN: string) => {
 
             break;
           case "F":
-            // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Large position={[POSITIONS[index][0],L_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'F', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "F",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "G":
-            // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Large position={[POSITIONS[index][0],L_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Medium position={[POSITIONS[index][0],M_BLOCK_Y_POS,POSITIONS[index][2]]} />)
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'G', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "G",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "H":
-             // tileBlocks[index] =[]
-            // tileBlocks[index].push (<Dome position={[POSITIONS[index][0],DOME_HEIGHT_Y_POS,POSITIONS[index][2]]} />)
-            // tileData[index] = {buildings: 'H', godToken: undefined, worker: undefined}
+            tileData[index] = {
+              buildings: "H",
+              godToken: undefined,
+              worker: undefined,
+            };
 
             break;
           case "X":
@@ -199,5 +211,5 @@ export const GenerateBoardData = (SAN: string) => {
 
   // console.log("workers", workers);
 
-  return { tileData, workerPositions, turnCount, playerTurn, playerCount};
+  return { tileData, workerPositions, turnCount, playerTurn, playerCount, playerPowers};
 };

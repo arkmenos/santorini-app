@@ -1,23 +1,35 @@
 import { v4 as uuidv4 } from "uuid";
-import { getWorkerYPositionIndicator, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
+import { Building, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
     Move, 
+    PlayerInfo, 
     POSITIONS, S_BLOCK_Y_POS, Tile, TILES, Worker, WorkerPostion } from "../../types/Types"
+import { getWorkerYPositionIndicator } from "../../Utility/Utility";
 import MoveIndicator from "../indicators/MoveIndicator"
-import { addCurrentGameAction, addWorkerPosition, clearIndicators, clearWorkerSelected, incrementWorkerCount, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
+import { addCurrentGameAction, addWorkerPosition, clearWorkerSelected, incrementWorkerCount, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { ThreeEvent } from "@react-three/fiber";
 import { Message, useToaster } from "rsuite";
+import { getMinotaurPushDestinationTile } from "../../Utility/Utility";
 
 interface IndicatorProp{
-    areWorkersMoveable:boolean
+    areWorkersMoveable:boolean,
+    player:PlayerInfo,
+    moveIndicators:Tile[],
+    moveWorkerIndicators: WorkerPostion[],
+    selectedWorker: Worker | null,
+    setMoveIndicators: (mIndicators:Tile[]) => void,
+    setMoveWorkerIndicators:(workerPositions:WorkerPostion[]) =>void,
+    setSelectedWorker:(worker:Worker|null) =>void,
 }
-function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
+function MoveIndicatorOnBoard ({areWorkersMoveable, player, moveIndicators, moveWorkerIndicators,
+    selectedWorker, setMoveIndicators, setMoveWorkerIndicators, setSelectedWorker}:IndicatorProp){
     const toaster = useToaster()
         
     const tileData = useAppSelector((state) => state.boardState.tileData) 
-    const workerSelected = useAppSelector((state) => state.boardState.workerSelected)
+    // const workerSelected = useAppSelector((state) => state.boardState.workerSelected)
     const workerPositions = useAppSelector((state) => state.boardState.workerPositions)
-    const moveIndicator = useAppSelector((state) => state.boardState.moveIndicator)
+    // const moveIndicator = useAppSelector((state) => state.boardState.moveIndicator)
+    // const mIndicators = useAppSelector((state) => state.moveIndicator)
     const playerCount = useAppSelector((state) => state.boardState.playerCount)
     const turnCount = useAppSelector((state) => state.boardState.turnCount)
     const workerCount = useAppSelector((state) => state.boardState.workerCount)
@@ -35,7 +47,7 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
             color = "yellow"
         }
         else {
-            switch (workerSelected){
+            switch (selectedWorker){
                 case "X":
                 case "x":
                     color = "red"
@@ -113,29 +125,60 @@ function MoveIndicatorOnBoard ({areWorkersMoveable}:IndicatorProp){
         }
            
         //worker movements
-        workerPositions.forEach(pos => {
-            if(pos.worker === moveIndicator.worker){
-                // console.log("update player position", pos, moveIndicator, position)
-                const previousPos = JSON.parse(JSON.stringify(pos))
-                const newPos = [...position]
-                const toTileBlock = tileData[TILES.indexOf(tile)].buildings
-                if(toTileBlock) newPos[1] = getWorkerYPositionIndicator(toTileBlock)
-                if(pos.worker) dispatch(addCurrentGameAction(({from: previousPos.tile, to: tile, worker:pos.worker}) as Move))
-                dispatch(setWorkerPosition({worker:pos.worker, position:newPos, tile: tile}))
-                dispatch(clearIndicators())
-                dispatch(clearWorkerSelected())
-                dispatch(setCanBuild(true))
+        const selectedWorkerPos = workerPositions.find(w => { return w.worker === selectedWorker});
+        
+        if(selectedWorkerPos){
+            // console.log("update player position", pos, moveIndicator, position)
+            const previousPos = JSON.parse(JSON.stringify(selectedWorkerPos))
+            const newPos = [...position]
+            const toTileBlock = tileData[TILES.indexOf(tile)].buildings
+            if(toTileBlock) newPos[1] = getWorkerYPositionIndicator(toTileBlock)
+            if(selectedWorkerPos.worker) dispatch(addCurrentGameAction((
+                {from: previousPos.tile, to: tile, worker:selectedWorkerPos.worker}) as Move))
+            dispatch(setWorkerPosition({worker:selectedWorkerPos.worker, position:newPos, tile: tile}))
+
+            //Atlas worker swap
+            const workerBeingSwapped = moveWorkerIndicators.find (w => {return w.tile === tile})
+            console.log("moveWorkerIndicators", moveWorkerIndicators, workerBeingSwapped)
+            if(player.identifier === "I" && workerBeingSwapped){
+                console.log("Can Swap")
+                dispatch(addCurrentGameAction((
+                    {from: workerBeingSwapped.tile, to: selectedWorkerPos.tile, worker:workerBeingSwapped.worker}) as Move))
+                dispatch(setWorkerPosition({worker:workerBeingSwapped.worker, position:selectedWorkerPos.position, 
+                    tile: selectedWorkerPos.tile}))
             }
-        })
+            else if(player.identifier === "VIII" && workerBeingSwapped){
+                const pushDestinationTile = getMinotaurPushDestinationTile(selectedWorkerPos.tile,
+                    workerBeingSwapped.tile, tileData);
+                
+                if(pushDestinationTile){
+                    const destPosition = [...POSITIONS[TILES.indexOf(pushDestinationTile)]]
+                    const destBuilding = tileData[TILES.indexOf(pushDestinationTile)].buildings ?? "E" as Building
+                    destPosition[1] = getWorkerYPositionIndicator(destBuilding)
+                    dispatch(addCurrentGameAction((
+                        {from: workerBeingSwapped.tile, to: pushDestinationTile, worker:workerBeingSwapped.worker}) as Move))
+                    dispatch(setWorkerPosition({worker:workerBeingSwapped.worker, position:destPosition, 
+                        tile: pushDestinationTile}))               
+                }
+            }
+            // dispatch(clearIndicators())
+            setMoveIndicators([])
+            setMoveWorkerIndicators([])
+            setSelectedWorker(null)
+            dispatch(clearWorkerSelected())
+            dispatch(setCanBuild(true))
+        }
+       
         // e.stopPropagation()
         // console.log("BOARD DATA ", boardData)
     }
 
+    
 
     return(
         <>
         {            
-            moveIndicator && moveIndicator.tiles.map(tile => {
+            moveIndicators && moveIndicators.map(tile => {
                 const pos = POSITIONS[TILES.indexOf(tile)]
                 const block = tileData[TILES.indexOf(tile)].buildings
                 let  blockLevel = 0

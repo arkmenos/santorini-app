@@ -1,83 +1,131 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import Board from "./Board"
 import './SantoriniBoard.css'
-import { START, Turn } from "../../types/Types"
+import { PlayerInfo, START, Tile, TILES, Turn, Worker, WorkerPostion } from "../../types/Types"
+import { isMobile } from "../../Utility/Utility"
 import { GenerateBoardData } from "./GenerateBoardData"
 import { v4 as uuidv4 } from 'uuid'
 import WorkersOnBoard from "./WorkersOnBoard"
 import MoveIndicatorOnBoard from "./MoveIndicatorsOnBoard"
-import { clearCurrentTurnData, setBoardState, setCanBuild, undoTurn } from "../../feature/boardstate-slice"
+import { setBoardState } from "../../feature/boardstate-slice"
 import TileBlocksOnBoard from "./TileBlocksOnBoard"
-import { Affix } from "rsuite"
+// import { Affix } from "rsuite"
 import BoardCoordinates from "./BoardCoordinates"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { useAppDispatch } from "../../app/hooks"
+import GamePlayControls from "./GamePlayControls"
+// import { GiPowerLightning } from "react-icons/gi"
+// import { setMoveIndicators } from "../../feature/moveIndicator-slice"
 
 interface BoardProps {
     SAN: string,
-    onTurnEnd?: (move:Turn) => {},
-    areWorkersMoveable?: boolean,
-    enableBuild?: boolean
+    onTurnEnd?: (move:Turn) => boolean|Error,
+    isTurn?: boolean,
+    enableBuild?: boolean,
+    player: PlayerInfo
 }
-function SantoriniBoard({SAN, onTurnEnd= ()=>true, areWorkersMoveable = true, enableBuild =true}:BoardProps) {
+function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardProps) {
 
-
+    const [moveIndicators, setMoveIndicators] = useState<Tile[]>([])
+    const [moveWorkerIndicators, setMoveWorkerIndicators] = useState<WorkerPostion[]>([])
+    const [selectedWorker, setSelectedWorker] = useState<Worker | null>(null)
+    const [canUseAtlasPower, setCanUseAtlasPower] = useState(false)
+    // const [prevMoveIndicators, setPrevMoveIndicators] = useState<WorkerPostion[]>([])
     const dispatch = useAppDispatch();
-    const canBuild = useAppSelector((state) => state.boardState.canBuild)
-    const currentGameActions = useAppSelector((state) => state.boardState.currentGameActions)
-    // const currentBuilds = useAppSelector((state) => state.boardState.currentBuilds)
-    
+    // const canBuild = useAppSelector((state) => state.boardState.canBuild)
+    // const currentGameActions = useAppSelector((state) => state.boardState.currentGameActions)
 
-    const handleBuild = () => {
-        if(!canBuild){
-            dispatch(setCanBuild(true))
-        }
-    }
+  
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [fov, _] = useState(isMobile() ? 110: 90)
+    // const [canUseSpecialPower, setCanUSeSpecialPower] = useState<GodIdentifier | null>(null)
 
-    const handleEndTurn = () => {
-        const turn:Turn = {gameActions: currentGameActions}
+    // const handleBuild = () => {
+    //     if(!canBuild){
+    //         dispatch(setCanBuild(true))
+    //     }
+    // }
+
+    // const handleEndTurn = () => {
+    //     const turn:Turn = {gameActions: currentGameActions}
  
-        if(onTurnEnd(turn)){
-            // console.log("onTurnEnd executed")
-        }
-        else {
-            dispatch(undoTurn())
-        }    
-        dispatch(clearCurrentTurnData())           
-    }
+    //     if(onTurnEnd(turn)){
+    //         // console.log("onTurnEnd executed")
+    //     }
+    //     else {
+    //         dispatch(undoTurn())
+    //     }    
+    //     dispatch(clearCurrentTurnData())           
+    // }
 
-    const handleUndoTurn = () => {
-        dispatch(undoTurn())
-        dispatch(clearCurrentTurnData()) 
-    }
+    // const handleUndoTurn = () => {
+    //     dispatch(undoTurn())
+    //     dispatch(clearCurrentTurnData()) 
+    // }
     
+    // useEffect(()=> {
+    //     cameraControlsRef.current?.lookInDirectionOf(15, 0, 1, false)
+    // })
+
     useEffect(() => {
         const data = GenerateBoardData(SAN === "" ? START : SAN);
+        let moveInds:Tile[] = []
+        if(data.turnCount === 1 || data.turnCount === 2 || (data.playerCount === 3 && data.turnCount ===3)){
+            data.tileData.forEach((t, i) => {
+                if(!t.worker)
+                    moveInds = [...moveInds, (TILES[i] as Tile)]
+            })
+            data.workerPositions.forEach(w => {
+                moveInds = moveInds.filter(t=> t !== w.tile)
+            })
+        }
+        setMoveIndicators(moveInds)
+        // dispatch(setMoveIndicators(moveInds))
         dispatch(setBoardState(data))
+       
     }, [SAN])
 
     return(
-        <div id="container">          
-            <Canvas >
+        <div id="gameboard">          
+            <Canvas camera={{ fov: fov, position: [0, 3, 5] }}>
+            {/* <CameraControls enabled={true} ref={cameraControlsRef}/> */}
                 <directionalLight position={[0,0,2]} intensity={0.8}  />
                 <ambientLight/>
                 <Board key={uuidv4()}>
-                    <WorkersOnBoard areWorkersMoveable={areWorkersMoveable}/>
-                    <MoveIndicatorOnBoard areWorkersMoveable={areWorkersMoveable}/>    
-                    <TileBlocksOnBoard />  
+                    <WorkersOnBoard areWorkersMoveable={isTurn} player={player} 
+                        moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
+                        moveWorkerIndicators={moveWorkerIndicators} 
+                        selectedWorker={selectedWorker}
+                        setMoveWorkerIndicators={setMoveWorkerIndicators}
+                        setSelectedWorker={setSelectedWorker}
+                        
+                        />
+
+                    <MoveIndicatorOnBoard areWorkersMoveable={isTurn} player={player}
+                        moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
+                        moveWorkerIndicators={moveWorkerIndicators} 
+                        setMoveWorkerIndicators={setMoveWorkerIndicators}
+                        selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker}/>    
+
+                    <TileBlocksOnBoard selectedWorker={selectedWorker} 
+                        setSelectedWorker={setSelectedWorker}  
+                        setMoveIndicators={setMoveIndicators}
+                        setMoveWorkerIndicators={setMoveWorkerIndicators}
+                        canUseAtlasPower={canUseAtlasPower}  setCanUseAtlasPower={setCanUseAtlasPower}
+
+                        />  
                     <BoardCoordinates />
                 </Board>     
                 <OrbitControls   minDistance={2}  maxDistance={6} minPolarAngle={0}
-                    maxPolarAngle={1.75} target={[0,-0.25,3]} position={[1,2,3]}/>
+                    maxPolarAngle={1.75} target={[0,0.1,-0.5]} 
+                    panSpeed={0.5} rotateSpeed={0.1} zoomSpeed={0.5}  />
+                    
             </Canvas>           
-            <Affix className="affix" >
-                <div>
-                    {canBuild && <button className="build-btn" disabled={enableBuild && !canBuild} onClick={() => handleBuild()}>Build</button>}
-                    <br/><br/><br/><button className="undoTurn-btn"  onClick={() => handleUndoTurn()}>Undo turn</button>
-                    <br/><br/><br/><button className="endTurn-btn"  onClick={() => handleEndTurn()}>End turn</button>
-                </div>
-            </Affix>
+            {isTurn && <GamePlayControls player={player} onTurnEnd={onTurnEnd} 
+                moveIndicators={moveIndicators} setMoveIndicators={setMoveIndicators}
+                selectedWorker={selectedWorker} setSelectedWorker={setSelectedWorker}
+                canUseAtlasPower={canUseAtlasPower}  setCanUseAtlasPower={setCanUseAtlasPower}/>}
         </div>
     )
 }

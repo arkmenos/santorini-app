@@ -1,0 +1,33 @@
+.tip-container {
+    position: absolute;
+    top: 7%;
+    left:85%;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    z-index: 1;    
+}
+
+.tip-popup {
+    z-index: -1;
+    visibility: hidden;
+}
+
+.tip-popup-show {
+    position: absolute;
+    background-color: antiquewhite;
+    visibility: visible;
+    width:15rem;
+    border-radius: 1rem;
+    padding: .2rem;
+    right:2rem;
+    top: 0rem;
+    /* height:5rem; */
+    /* margin-left: -12rem;     */
+} 
+h3 {
+    font-size: large;
+}

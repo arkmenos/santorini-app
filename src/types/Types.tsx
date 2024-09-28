@@ -3,11 +3,14 @@ export type Block = 'L' | 'M' | 'S' | 'E';
 export type Dome = 'D' | 'F' | 'G' | 'H';
 export type Player = 'X' | 'Y' | 'Z' ;
 export type Worker = 'X' | 'x' | 'Y' | 'y' | 'Z' | 'z';
-export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X';
+export type GodIdentifier = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII' | 'IX' | 'X'
+    | 'XI' | 'XII' | 'XIII' | 'XIV' | 'XV' | 'XVI' | 'XVII' | 'XVIII' | 'XIX' | 'XX'
+    | 'XXI' | 'XXII' | 'XXIII' | 'XXIV' | 'XXV' | 'XXVI' | 'XXVII' | 'XXVIII' | 'XXIX' | 'XXX';
 export type GodToken = 'W' | 'P' | 'p' | 'C' | 'T' | 'E' | 'e' | 'R' | 'S' | 'A' | 'O';
 export type Tile = 'a5'|'b5'|'c5'| 'd5'| 'e5'|'a4'|'b4'|'c4'| 'd4'| 'e4'|'a3'|'b3'|'c3'| 'd3'| 'e3'|'a2'|'b2'|'c2'| 'd2'| 'e2'|'a1'|'b1'|'c1'| 'd1'| 'e1';
 
 export const TILES = ['a5','b5','c5', 'd5', 'e5','a4','b4','c4', 'd4', 'e4','a3','b3','c3', 'd3', 'e3','a2','b2','c2', 'd2', 'e2','a1','b1','c1', 'd1', 'e1']
+export const PERIMETER_TILES = ['a5', 'b5','c5', 'd5', 'e5', 'a4', 'a3','a2', 'a1', 'b1', 'c1', 'd1', 'e1', 'e2', 'e3', 'e4']
 
 export const START = "5/5/5/5/5 X - - L22/M18/S14/D18 - - 1";
 export const BLOCKS = ['L', 'M', 'S'];
@@ -16,6 +19,13 @@ export const PLAYERS: Player[] = ['X', 'Y', 'Z'];
 export const WORKERS = ['X' , 'x' , 'Y' , 'y' , 'Z' , 'z'];
 export const GODS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'];
 export const GODTOKENS = ['W' , 'P' , 'p' , 'C' , 'T', 'G', 'g'  , 'R' , 'S' , 'A' , 'O'];
+export const GODIDENTIFIERS = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X'
+    , 'XI' , 'XII' , 'XIII' , 'XIV' , 'XV' , 'XVI' , 'XVII' , 'XVIII' , 'XIX' , 'XX'
+    , 'XXI' , 'XXII' , 'XXIII' , 'XXIV' , 'XXV' , 'XXVI' , 'XXVII' , 'XXVIII' , 'XXIX' , 'XXX', '-'];
+export const TWOPLAYERONLY = ['XI', 'XVI', 'XVII'];
+export const UNAVAILABLE_POWERS = ['XIV', 'XXV'];
+export const AVAILABLE_POWERS = ['IX', 'XVI'];
+export const SIMPLE_GOD_POWERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X']
 
 export const MAX_L_BLOCKS = 22;
 export const MAX_M_BLOCKS = 18;
@@ -33,6 +43,9 @@ export const S_BLOCK_Y_POS = 1.555;
 export const S_BLOCK_WIDTH = 1;
 export const DOME_LENGTH = 1;
 export const DOME_Y_POS = 1.725;
+export const DOME_Y_POS_GROUND = 0.37;
+export const DOME_Y_POS_FIRST = 0.8750;
+export const DOME_Y_POS_SECOND = 1.375;
 export const DOME_WIDTH = 1;
 export const PLAYER_POS_GROUND = 0.37;
 export const PLAYER_POS_FIRST_LEVEL = 0.8750;
@@ -71,14 +84,19 @@ export type GamePlayer = Player | 'S'
 export interface PlayerInfo {
     name: string,
     roomId: string,
-    type?: GamePlayer
+    type?: GamePlayer,
+    identifier: GodIdentifier | null;
 }
 
 export interface GameProp{
     playerInfo:PlayerInfo,
-    playerCount:number,
-    players: PlayerInfo[],
+    opponents: PlayerInfo[],
 }
+
+export type PlayMode =  "No Powers" | "Pick Powers" | "Random Powers";
+export const PLAY_MODES = ["No Powers", "Pick Powers", "Random Powers"]
+
+export type GameStartPhase = "CreateRoom" | "JoinRoom" | "WaitingRoom" | "PickPowers" | "StartGame";
 
 export const TILE_ADJACENCY: number[][] = new Array<number[]>();
 TILE_ADJACENCY[0] = [1,5,6];
@@ -124,7 +142,14 @@ VALID_BUILDS.set(tileL, tileM)
 VALID_BUILDS.set(tileM, tileS)
 VALID_BUILDS.set(tileS, domeD)
 
-
+export const ATLAS_VALID_BUILDS: Map<Building,Building[]> = new Map();
+const domeL:Dome = "F";
+const domeM:Dome = "G";
+const domeE:Dome = "H";
+ATLAS_VALID_BUILDS.set(tileE, [tileL, domeE]);
+ATLAS_VALID_BUILDS.set(tileL, [tileM, domeL]);
+ATLAS_VALID_BUILDS.set(tileM, [tileS, domeM]);
+ATLAS_VALID_BUILDS.set(tileS, [domeD])
 
 export  const POSITIONS: number[][] = new Array<number[]>();
 let x = 0;
@@ -140,8 +165,8 @@ for(let row = 4; row >= 0; row--){
 }
 
 export type BoardState = {
-    moveIndicator: {tiles: Tile[], worker: Worker | undefined},
-    previousMoveIndicator: {tiles: Tile[], worker: Worker | undefined},
+    // moveIndicator: {tiles: Tile[], worker: Worker | undefined},
+    // previousMoveIndicator: {tiles: Tile[], worker: Worker | undefined},
     tileData: TileData[],
     workerPositions: WorkerPostion[],
     workerSelected: Worker | undefined,
@@ -153,6 +178,15 @@ export type BoardState = {
     playerCount: number,
     workerCount: number,
     currentGameActions: GameAction[],
+    playerPowers:GodIdentifier[],
+    // canUseAtlasPower: boolean,
+    canPlaceBlock: boolean,
+    moveWorkers: WorkerPostion[],
+}
+
+export type MoveIndicators = {
+    tiles: Tile[],
+    // worker: Worker | undefined
 }
 
 export type WorkerPostion = {
@@ -173,57 +207,7 @@ export type BoardData = {
     unusedMBlocks?: number,
     unusedSBlocks?: number,
     unusedDomes?: number,
-}
-
-export const getStartTileData =(): TileData[] => {
-    const result:TileData[] = []
-    for(let i=0; i < 25; i++){
-      result.push({buildings:"E"})
-    }
-    return result;
-  }
-
- export function createTurn(tileData: TileData[], previousTileData: TileData[]):string{
-    let moves = ""
-    let builds = ""
-    tileData.forEach((data, index) => {
-        if(data.buildings && data.buildings !== previousTileData[index]?.buildings){
-            builds += data.buildings + TILES[index] + "/"
-        }
-        if(data.worker && data.worker !== previousTileData[index]?.worker){
-            moves += data.worker +TILES[index] + "/"
-        }
-    })
-    if(builds === ""){
-        builds = "-"
-    }
-    else{
-        builds = builds.substring(0, builds.length - 1)
-    }
-        
-    const result = `${moves.substring(0, moves.length - 1)} ${builds}`
-    console.log("Created Turn: ", result)
-    return result;
-}
-
-export function getWorkerYPositionIndicator(block:Building):number {
-    let result = PLAYER_POS_GROUND;
-    switch (block){
-        case "L":
-            result = PLAYER_POS_FIRST_LEVEL
-            break;
-        case "M":
-            result = PLAYER_POS_SECOND_LEVEL
-            break;
-        case "S":
-            result = PLAYER_POS_THIRD_LEVEL
-            break;
-        case "E":
-            result = PLAYER_POS_GROUND
-            break;
-    }
-
-    return result
+    
 }
 
 export interface BlockProp {
@@ -231,3 +215,16 @@ export interface BlockProp {
     size?:[width:number, height:number,depth:number],
     color?: string
 }
+
+export type GodCardInfo = {
+    name: string;
+    description: string ;
+    flavorText: string;
+    identifier: GodIdentifier | null; 
+}
+export interface PopUpProp {
+    index: string,
+    selectedIndex: string,
+    setSelectedIndex:(arg0:string) => void
+}
+

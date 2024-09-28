@@ -1,0 +1,45 @@
+.godcard-container{
+    display: grid;
+    border-width: 5px;
+    border-radius: 10px;;
+    border: 2px solid black;
+    text-align: center;
+    width: 150px;
+    height: 260px;  
+    justify-content: center; 
+    
+}
+
+.godcard-container:hover{
+    cursor: pointer;
+}
+
+.godCard-container-selected{
+    display: grid;
+    border-width: 5px;
+    border-radius: 10px;;
+    border: 2px solid black;
+    text-align: center;
+    width: 150px;
+    height: 260px;  
+    justify-content: center; 
+    background-color: rgb(230, 217, 40);
+    color: black;
+    outline: 1px solid red;    
+    
+}
+
+.godcard-container-opponent{
+    display: block;
+    border-width: 5px;
+    border-radius: 10px;;
+    border: 2px solid black;
+    text-align: center;
+    width: 150px;
+    height: 260px;  
+    justify-content: center; 
+    background-color: rgb(243, 62, 7);
+    color: black;
+    outline: 1px solid red;    
+}
+

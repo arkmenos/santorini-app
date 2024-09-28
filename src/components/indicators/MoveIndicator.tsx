@@ -9,7 +9,7 @@ function MoveIndicator({position, color,...props}) {
         <>
         <group  dispose={null} {...props} >
             <mesh position={position} rotation={[-1.54, 0, 0]}  >
-                <circleGeometry args={[0.2,36]}  />
+                <circleGeometry args={[0.33,36]}  />
                 <Edges linewidth={2} threshold={1} />
                 <meshBasicMaterial  color={color} />
             </mesh>
