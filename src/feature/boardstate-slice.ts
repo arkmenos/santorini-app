@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { BoardState, Build, GameAction, GodIdentifier, Move, TileDataUpdator, TILES, WorkerPostion } from "../types/Types"
+import { BoardState, GameAction, GodIdentifier, TileDataUpdator, TILES, WorkerPostion } from "../types/Types"
 
 const initialState = {
     // moveIndicator: {

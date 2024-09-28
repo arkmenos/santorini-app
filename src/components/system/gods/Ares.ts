@@ -1,4 +1,4 @@
-import { ARES_VALID_REMOVE, Build, Building, DOMES, Move, Player, RemoveBuilding, Tile, TILE_ADJACENCY, TileData, TILES, Turn, Worker } from "../../../types/Types";
+import { ARES_VALID_REMOVE, Build, DOMES, Move, Player, RemoveBuilding, Tile, TILE_ADJACENCY, TileData, TILES, Turn, Worker } from "../../../types/Types";
 import Mortal from "../Mortal";
 import Restriction from "../restrictions/Restrictions";
 

@@ -1,4 +1,4 @@
-import { Build, Building, Move, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+import { Build, Building, Move, TILE_ADJACENCY, TileData, TILES, VALID_BUILDS} from "../../../types/Types";
 import Mortal from "../Mortal";
 
 class Zeus extends Mortal {

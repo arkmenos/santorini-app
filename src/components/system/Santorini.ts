@@ -1,6 +1,7 @@
 import {  START,  Worker,  WORKERS,  BLOCKS,  DOMES,  TILES,  Tile,  MAX_DOMES,  MAX_L_BLOCKS,
   MAX_M_BLOCKS,  MAX_S_BLOCKS,  TileData,  Block,  Turn,  Move,  Building,  
   TILE_ADJACENCY,  VALID_MOVEMENTS,  Player,  PLAYERS,  GODIDENTIFIERS,
+  GodIdentifier,
   } from "../../types/Types";
 import Apollo from "./gods/Apollo";
 import Ares from "./gods/Ares";
@@ -683,7 +684,7 @@ class Santorini {
     const athena = new Athena()
     const athenaRestriction = athena.getRestriction()
     identifiers.forEach(id => {
-      if(GODIDENTIFIERS.includes(id)){
+      if(GODIDENTIFIERS.includes(id as GodIdentifier)){
         switch (id){
           case "-":
             this.playerPowers.push(new Mortal())
