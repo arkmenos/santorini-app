@@ -2,7 +2,6 @@ import { Move, Player, Tile, TileData, Turn, Worker } from "../../../types/Types
 import { isMoveAscending } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
 import AthenaRestrictions from "../restrictions/AthenaRestrictions";
-import Restriction from "../restrictions/Restrictions";
 
 class Athena extends Mortal{
     constructor(){
@@ -12,10 +11,7 @@ class Athena extends Mortal{
     }
     
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
-        restrictions: Restriction[]){
-        
-        this.checkRestrictions(turn, tileData,restrictions)           
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){      
         
         this.validateActions(turn, turnCount, playerCount, tileData)
         let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,

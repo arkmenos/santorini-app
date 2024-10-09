@@ -1,7 +1,6 @@
 import { Build, Building, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
 import { isMoveSameLevel } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
-import Restriction from "../restrictions/Restrictions";
 
 class Hermes extends Mortal {
     constructor(){
@@ -214,10 +213,7 @@ class Hermes extends Mortal {
     }
 
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
-        restrictions: Restriction[]){
-        
-        this.checkRestrictions(turn, tileData,restrictions)           
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){       
         
         this.validateActions(turn, turnCount, playerCount, tileData)
 

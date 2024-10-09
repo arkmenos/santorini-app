@@ -10,7 +10,7 @@ export type GodToken = 'W' | 'P' | 'p' | 'C' | 'T' | 'E' | 'e' | 'R' | 'S' | 'A'
 export type Tile = 'a5'|'b5'|'c5'| 'd5'| 'e5'|'a4'|'b4'|'c4'| 'd4'| 'e4'|'a3'|'b3'|'c3'| 'd3'| 'e3'|'a2'|'b2'|'c2'| 'd2'| 'e2'|'a1'|'b1'|'c1'| 'd1'| 'e1';
 
 export const TILES = ['a5','b5','c5', 'd5', 'e5','a4','b4','c4', 'd4', 'e4','a3','b3','c3', 'd3', 'e3','a2','b2','c2', 'd2', 'e2','a1','b1','c1', 'd1', 'e1']
-export const PERIMETER_TILES = ['a5', 'b5','c5', 'd5', 'e5', 'a4', 'a3','a2', 'a1', 'b1', 'c1', 'd1', 'e1', 'e2', 'e3', 'e4']
+export const PERIMETER_TILES: Tile[] = ['a5', 'b5','c5', 'd5', 'e5', 'a4', 'a3','a2', 'a1', 'b1', 'c1', 'd1', 'e1', 'e2', 'e3', 'e4']
 
 export const START = "5/5/5/5/5 X - - L22/M18/S14/D18 - - 1";
 export const BLOCKS = ['L', 'M', 'S'];
@@ -24,7 +24,7 @@ export const GODIDENTIFIERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' ,
     , 'XXI' , 'XXII' , 'XXIII' , 'XXIV' , 'XXV' , 'XXVI' , 'XXVII' , 'XXVIII' , 'XXIX' , 'XXX', '-'];
 export const TWO_PLAYER_ONLY:GodIdentifier[] = ['XI', 'XVI', 'XVII'];
 export const UNAVAILABLE_POWERS:GodIdentifier[] = ['XIV', 'XXV'];
-export const AVAILABLE_POWERS:GodIdentifier[] = ['XII','XVI','XXX'];
+export const AVAILABLE_POWERS:GodIdentifier[] = ['XII', 'XIII','XVI','XXX'];
 export const SIMPLE_GOD_POWERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X']
 
 export const MAX_L_BLOCKS = 22;
@@ -80,11 +80,16 @@ export type RemoveBuilding = {
     tile: Tile
 }
 
+export type RemoveWorker = {
+    tile: Tile,
+    worker: Worker,
+}
+
 export type Turn = {
     gameActions: GameAction[]
 }
 
-export type GameAction = Move | Build | RemoveBuilding
+export type GameAction = Move | Build | RemoveBuilding | RemoveWorker
 
 export type GamePlayer = Player | 'S'
 

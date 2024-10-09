@@ -1,6 +1,6 @@
-import { Building, DOMES, Move, PLAYER_POS_FIRST_LEVEL, PLAYER_POS_GROUND, PLAYER_POS_SECOND_LEVEL, PLAYER_POS_THIRD_LEVEL, Tile, TileData, TILES } from "../types/Types";
+import { Building, Move, PLAYER_POS_FIRST_LEVEL, PLAYER_POS_GROUND, PLAYER_POS_SECOND_LEVEL, PLAYER_POS_THIRD_LEVEL, Tile, TileData, TILES } from "../types/Types";
 
-export const getMinotaurPushDestinationTile = (fromTile: Tile | undefined, 
+export const getNextTileInSameDirection = (fromTile: Tile | undefined, 
     toTile: Tile | undefined, tileData: TileData[]) =>{ 
     if (!fromTile || !toTile) return null;
 
@@ -8,12 +8,13 @@ export const getMinotaurPushDestinationTile = (fromTile: Tile | undefined,
     const yPushDirection = toTile.charCodeAt(1) - fromTile.charCodeAt(1)
     const destinationTile = String.fromCharCode(toTile.charCodeAt(0) + xPushDirection) + 
         String.fromCharCode(toTile.charCodeAt(1) + yPushDirection);
-    
+    console.log("destinationTile", destinationTile)
     if(TILES.includes(destinationTile)){
         const destTileData:TileData = tileData[TILES.indexOf(destinationTile)]
         // const destBuilding = destTileData.buildings ? 
-        if(destTileData && !destTileData.worker && ((destTileData.buildings &&
-            !DOMES.includes(destTileData.buildings)) || !destTileData.buildings))
+        console.log("destTileData", destTileData)
+        // if(destTileData && !destTileData.worker && ((destTileData.buildings &&
+        //     !DOMES.includes(destTileData.buildings)) || !destTileData.buildings))
             return destinationTile as Tile
     }
 

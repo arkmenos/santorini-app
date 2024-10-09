@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks.js";
 import { Message, useToaster } from "rsuite";
 import { ThreeEvent } from "@react-three/fiber";
-import { getMinotaurPushDestinationTile } from "../../Utility/Utility.js";
+import { getNextTileInSameDirection } from "../../Utility/Utility.js";
 
 interface WorkersProp {
     isTurn:boolean,
@@ -111,7 +111,7 @@ const WorkersOnBoard = ({isTurn, player, moveIndicators,moveWorkerIndicators,
                 return
             }
             else if(player.identifier === "VIII" && workerBeingSwapped && selectedWorkerToSwap){
-                const pushDestinationTile = getMinotaurPushDestinationTile(selectedWorkerToSwap.tile,
+                const pushDestinationTile = getNextTileInSameDirection(selectedWorkerToSwap.tile,
                     workerBeingSwapped.tile, tileData);
                 
                 if(pushDestinationTile){
@@ -158,7 +158,7 @@ const WorkersOnBoard = ({isTurn, player, moveIndicators,moveWorkerIndicators,
                     }
                     else if(toBlockLevel.worker && workerPos.tile &&
                         (player.identifier === "I" || (player.identifier === "VIII" && 
-                            getMinotaurPushDestinationTile(workerPos.tile, tile, tileData))) && 
+                            getNextTileInSameDirection(workerPos.tile, tile, tileData))) && 
                             toBlockLevel.worker.toUpperCase() !== player.type?.toUpperCase()){
                             const tempWorkerPos = workerPositions.find(w => w.worker === toBlockLevel.worker)
                         if(tempWorkerPos){

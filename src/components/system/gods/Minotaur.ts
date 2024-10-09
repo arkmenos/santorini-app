@@ -1,5 +1,5 @@
 import { Build, DOMES, Move, Player, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
-import { getMinotaurPushDestinationTile } from "../../../Utility/Utility";
+import { getNextTileInSameDirection } from "../../../Utility/Utility";
 import Mortal from "../Mortal";
 
 class Minotaur extends Mortal {
@@ -18,7 +18,7 @@ class Minotaur extends Mortal {
                
                 if(firstMoveAction.from && tileData[TILES.indexOf(secondMoveAction.to)]){
 
-                    const pushedDestTile = getMinotaurPushDestinationTile(firstMoveAction.from, 
+                    const pushedDestTile = getNextTileInSameDirection(firstMoveAction.from, 
                         firstMoveAction.to, tileData)
                     
                     if(secondMoveAction.to !== pushedDestTile)
@@ -91,51 +91,8 @@ class Minotaur extends Mortal {
         }
     }
 
-    
-    // protected isValidMove(moveAction: Move, tileData: TileData[], playerTurn: Player){
-    //     if(playerTurn !== moveAction.worker.toUpperCase()){
-    //         throw new Error(`Cannot move ${moveAction.worker} on ${playerTurn}'s turn`)
-    //     }
-    //     if(moveAction.from){
-    //         if(!TILE_ADJACENCY[TILES.indexOf(moveAction.from)].includes(TILES.indexOf(moveAction.to))){
-    //             throw new Error(`Cannot move from ${moveAction.from} to ${moveAction.to}`);
-    //         }
-    //         else {
-    //             //Tile level check
-    //             const tempFromTile = tileData[TILES.indexOf(moveAction.from)]
-    //             const tempToTile = tileData[TILES.indexOf(moveAction.to)]
-    //             const fromBlockLevel = tempFromTile.buildings ? tempFromTile.buildings : "E" as Building
-    //             const toBlockLevel = tempToTile.buildings ? tempToTile.buildings  : 'E' as Building
-
-    //             // console.log("Temp Data Tiles : ", tempTileData, tempFromTile, tempToTile)
-    //             // console.log("fromBlockLevel toBlockLevel", fromBlockLevel, toBlockLevel)
-    //             if(!VALID_MOVEMENTS.get(fromBlockLevel)?.includes(toBlockLevel) || 
-    //                 (tempToTile.worker?.toUpperCase() === playerTurn) && !this.canPush(moveAction,tileData)){                
-    //                 throw new Error(`Invalid move ${moveAction.worker} from ${moveAction.from} to ${moveAction.to}`);             
-    //             } 
-    //         }
-    //         return true
-    //     }
-    //     else {
-    //         const tileToPlaceWorker = tileData[TILES.indexOf(moveAction.to)]
-    //         if(tileToPlaceWorker){
-    //           if((tileToPlaceWorker.buildings && tileToPlaceWorker.buildings !== "E") ||
-    //             tileToPlaceWorker.worker){
-    //               throw new Error(`Invalid worker placement to ${moveAction.to}`);
-    //           }
-    //           return true
-    //         }
-    //     }
-    //     return false
-    // }
-
-    // protected validateMoveActions(turn: Turn, playerTurn: Player, tileData: TileData[]){
-    //     // const moveAction = turn.gameActions[0] as Move
-    //     // this.isValidMove(moveAction, tileData, playerTurn) 
-    // }
-
-
     protected performMoveAction(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         workerPositions: Tile[], _playerTurn: Player){
             
         // this.validateMoveActions(turn, playerTurn, tileData);

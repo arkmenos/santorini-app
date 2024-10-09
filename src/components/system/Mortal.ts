@@ -28,7 +28,8 @@ class Mortal {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected validateActions(turn: Turn, turnCount: number, playerCount:number, _tileData?:TileData[]){             
+    protected validateActions(turn: Turn, turnCount: number, playerCount:number,
+        _tileData?:TileData[], _workerPositionsMap?: Map<Worker, Tile>){             
        
         const moveAction = turn.gameActions[0] as Move
         //Worker Placement Phase
@@ -128,7 +129,9 @@ class Mortal {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public isSecondaryWinConditionMet(_turn?: Turn, _tileData?: TileData[]): boolean {    
+    public isSecondaryWinConditionMet(_turn?: Turn, _tileData?: TileData[], 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _workerPositionsMap?:Map<Worker,Tile>, _playerTurn?:Player): boolean {    
         return false
     }
 
@@ -194,10 +197,9 @@ class Mortal {
     }
 
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
-        restrictions: Restriction[]){
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){
         
-        this.checkRestrictions(turn, tileData,restrictions)        
+        // this.checkRestrictions(turn, tileData,restrictions)        
 
         this.validateActions(turn, turnCount, playerCount, tileData)
         let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
@@ -209,18 +211,24 @@ class Mortal {
 
         turnData = this.performBuildAction(turn, turnData.tileData, turnData.workerPositionsMap,
             turnData.workerPositions, turnCount, playerCount);
+
+        if(this.isSecondaryWinConditionMet(turn, tileData, workerPositionsMap, playerTurn)){
+            const newTurnData = {...turnData, isSecondaryWinConditionMet: true}
+
+            return newTurnData
+        }
         
         return turnData;
     }    
 
-    protected checkRestrictions(turn: Turn, tileData: TileData[], restrictions: Restriction[]){
-        restrictions.forEach(res => {
-            if(res.getGodIdentifier() !== this.getIdentifier() && res.getActive()){               
-                res.isMoveRestricted(turn, tileData);
-                res.isBuildRestricted(turn, tileData)
-            }
-        })
-    }
+    // protected checkRestrictions(turn: Turn, tileData: TileData[], restrictions: Restriction[]){
+    //     restrictions.forEach(res => {
+    //         if(res.getGodIdentifier() !== this.getIdentifier() && res.getActive()){               
+    //             res.isMoveRestricted(turn, tileData);
+    //             res.isBuildRestricted(turn, tileData)
+    //         }
+    //     })
+    // }
   
 }
 

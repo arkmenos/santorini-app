@@ -8,6 +8,7 @@ import Ares from "./gods/Ares";
 import Artemis from "./gods/Artemis";
 import Athena from "./gods/Athena";
 import Atlas from "./gods/Atlas";
+import Bia from "./gods/Bia";
 import Chronus from "./gods/Chronus";
 import Demeter from "./gods/Demeter";
 import Hephaestus from "./gods/Hephaestus";
@@ -18,6 +19,14 @@ import Prometheus from "./gods/Prometheus";
 import Zeus from "./gods/Zeus";
 import Mortal from "./Mortal";
 import Restriction from "./restrictions/Restrictions";
+
+interface TurnResult {
+  tileData: TileData[];
+  workerPositionsMap: Map<Worker, Tile>;
+  workerPositions: Tile[];
+  isPrimaryWinConditionMet: boolean;
+  isSecondaryWinConditionMet?: boolean;
+}
 
 class Santorini {
   private notation: string;
@@ -47,6 +56,7 @@ class Santorini {
   private isChronusInPlay:boolean = false;
   private restrictions:Restriction[] = []
 
+  
 
 
   constructor(notation?: string, playerCount?: number) {
@@ -199,9 +209,15 @@ class Santorini {
       const playerIndex = this.playerTurn.charCodeAt(0) - 88
       mortal = this.playerPowers[playerIndex]
     }
-    // console.log("Mortal taking turn ", mortal, this.playerPowers, this.playerTurn.charCodeAt(0) - 88)     
-    const mAction = mortal.takeTurn(turn, tempTileData, tempWorkerPositionsMap, 
-      tempWorkerPositions, this.playerTurn, this.turnCount, this.playerCount, this.restrictions);
+    
+    this.restrictions.forEach(res => {
+      if(res.getGodIdentifier() !== mortal.getIdentifier() && res.getActive()){               
+          res.isMoveRestricted(turn, tempTileData, this.playerPowers, this.playerTurn, tempWorkerPositionsMap);
+          res.isBuildRestricted(turn, tempTileData)
+      }
+  })
+    const mAction:TurnResult = mortal.takeTurn(turn, tempTileData, tempWorkerPositionsMap, 
+      tempWorkerPositions, this.playerTurn, this.turnCount, this.playerCount);
  
     tempTileData = mAction.tileData;
     tempWorkerPositionsMap = mAction.workerPositionsMap
@@ -209,7 +225,7 @@ class Santorini {
  
 
     //Check primary win condition
-    if(mAction.isPrimaryWinConditionMet){
+    if(mAction.isPrimaryWinConditionMet || mAction.isSecondaryWinConditionMet){
       const tempMove = turn.gameActions[0] as Move
       this.gameOverInd = true;
       this.winner = tempMove.worker.toLocaleUpperCase() as Player
@@ -248,8 +264,10 @@ class Santorini {
     let s_Blocks = 14
     let domes = 18
 
+    console.log("createNewSAN newWorkerPositionsMap", newWorkerPositionsMap)
+
     for(let i = 0; i < 25; i++){
-      if(data[i].buildings === "E"){        
+      if(data[i].buildings === "E" || !data[i].buildings){        
         
         if(data[i].worker){
           if(emptyTiles !== 0) result += emptyTiles  
@@ -723,6 +741,9 @@ class Santorini {
           case "XII":
             this.playerPowers.push( new Ares())
             break;
+          case "XIII":
+            this.playerPowers.push(new Bia())
+              break;
           case "XVI":
             this.playerPowers.push( new Chronus())
             this.isChronusInPlay = true;

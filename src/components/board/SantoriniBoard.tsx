@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber"
 import { OrbitControls } from "@react-three/drei"
 import Board from "./Board"
 import './SantoriniBoard.css'
-import { PlayerInfo, START, Tile, TILES, Turn, Worker, WorkerPostion } from "../../types/Types"
+import { PERIMETER_TILES, PlayerInfo, START, Tile, TILES, Turn, Worker, WorkerPostion } from "../../types/Types"
 import { isMobile } from "../../Utility/Utility"
 import { GenerateBoardData } from "./GenerateBoardData"
 import { v4 as uuidv4 } from 'uuid'
@@ -72,13 +72,24 @@ function SantoriniBoard({SAN, onTurnEnd= ()=>true, isTurn = true, player}:BoardP
         const data = GenerateBoardData(SAN === "" ? START : SAN);
         let moveInds:Tile[] = []
         if(data.turnCount === 1 || data.turnCount === 2 || (data.playerCount === 3 && data.turnCount ===3)){
-            data.tileData.forEach((t, i) => {
-                if(!t.worker)
-                    moveInds = [...moveInds, (TILES[i] as Tile)]
-            })
-            data.workerPositions.forEach(w => {
-                moveInds = moveInds.filter(t=> t !== w.tile)
-            })
+            
+            // console.log("set Bia start ")
+            if(player.identifier === "XIII"){
+                console.log("set Bia start ")
+                PERIMETER_TILES.forEach(p => {
+                    moveInds = [...moveInds, p]
+                })
+            }else{
+            
+                data.tileData.forEach((t, i) => {
+                    if(!t.worker)
+                        moveInds = [...moveInds, (TILES[i] as Tile)]
+                })
+                data.workerPositions.forEach(w => {
+                    moveInds = moveInds.filter(t=> t !== w.tile)
+                })
+            }
+           
         }
         setMoveIndicators(moveInds)
         // dispatch(setMoveIndicators(moveInds))

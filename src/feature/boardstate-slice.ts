@@ -63,7 +63,6 @@ const boardState = createSlice({
             // state.moveIndicator.tiles = state.moveIndicator.tiles.filter(tile => tile !== action.payload.tile)
             state.tileData[TILES.indexOf(action.payload.tile as string)].worker = action.payload.worker
         },
-
         setWorkerPosition(state, action:PayloadAction<WorkerPostion>){
             let previousTile 
             state.workerPositions.filter((workerPos) => {
@@ -75,6 +74,12 @@ const boardState = createSlice({
             })
             state.tileData[TILES.indexOf(action.payload.tile as string)].worker = action.payload.worker
             if(previousTile) state.tileData[TILES.indexOf(previousTile)].worker = undefined
+        },
+        removeWorker(state, action:PayloadAction<WorkerPostion>){
+            if(action.payload.tile){
+                delete state.tileData[TILES.indexOf(action.payload.tile)].worker
+                state.workerPositions = state.workerPositions.filter( p => p.worker !== action.payload.worker)
+            }
         },
         setWorkerSelected(state, action){
             state.workerSelected = action.payload
@@ -194,7 +199,7 @@ const boardState = createSlice({
 export const {  setTileData, 
     setWorkerPosition, setWorkerPositions, setWorkerSelected, clearWorkerSelected, 
     setCanBuild, setCanPlaceBlock,updateTileData, setPlayerTurn, setTurnCount, 
-    setBoardState, addWorkerPosition, incrementWorkerCount, undoTurn, 
+    setBoardState, addWorkerPosition, incrementWorkerCount, undoTurn, removeWorker,
     addCurrentGameAction, clearCurrentTurnData,setPreviousTileData,setMoveWorkers 
 } = boardState.actions;
 

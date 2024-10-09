@@ -2,14 +2,14 @@ import { v4 as uuidv4 } from "uuid";
 import { Building, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
     Move, 
     PlayerInfo, 
-    POSITIONS, S_BLOCK_Y_POS, Tile, TILES, Worker, WorkerPostion } from "../../types/Types"
+    POSITIONS, RemoveWorker, S_BLOCK_Y_POS, Tile, TILES, Worker, WorkerPostion } from "../../types/Types"
 import { getWorkerYPositionIndicator } from "../../Utility/Utility";
 import MoveIndicator from "../indicators/MoveIndicator"
-import { addCurrentGameAction, addWorkerPosition, clearWorkerSelected, incrementWorkerCount, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
+import { addCurrentGameAction, addWorkerPosition, clearWorkerSelected, incrementWorkerCount, removeWorker, setCanBuild, setWorkerPosition } from "../../feature/boardstate-slice"
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { ThreeEvent } from "@react-three/fiber";
 import { Message, useToaster } from "rsuite";
-import { getMinotaurPushDestinationTile } from "../../Utility/Utility";
+import { getNextTileInSameDirection } from "../../Utility/Utility";
 
 interface IndicatorProp{
     isTurn:boolean,
@@ -141,8 +141,7 @@ function MoveIndicatorOnBoard ({isTurn, player, moveIndicators, moveWorkerIndica
                 {from: previousPos.tile, to: tile, worker:selectedWorkerPos.worker}) as Move))
             dispatch(setWorkerPosition({worker:selectedWorkerPos.worker, position:newPos, tile: tile}))
 
-            const workerBeingSwapped = moveWorkerIndicators.find (w => {return w.tile === tile})
-            console.log("moveWorkerIndicators", moveWorkerIndicators, workerBeingSwapped)
+            const workerBeingSwapped = moveWorkerIndicators.find (w => {return w.tile === tile})           
             if(player.identifier === "I" && workerBeingSwapped){
                 //Atlas worker swap
                 console.log("Can Swap")
@@ -153,7 +152,7 @@ function MoveIndicatorOnBoard ({isTurn, player, moveIndicators, moveWorkerIndica
             }
             else if(player.identifier === "VIII" && workerBeingSwapped){
                 //Minotaur push
-                const pushDestinationTile = getMinotaurPushDestinationTile(selectedWorkerPos.tile,
+                const pushDestinationTile = getNextTileInSameDirection(selectedWorkerPos.tile,
                     workerBeingSwapped.tile, tileData);
                 
                 if(pushDestinationTile){
@@ -164,6 +163,20 @@ function MoveIndicatorOnBoard ({isTurn, player, moveIndicators, moveWorkerIndica
                         {from: workerBeingSwapped.tile, to: pushDestinationTile, worker:workerBeingSwapped.worker}) as Move))
                     dispatch(setWorkerPosition({worker:workerBeingSwapped.worker, position:destPosition, 
                         tile: pushDestinationTile}))               
+                }
+            }
+            else if(player.identifier === "XIII"){
+                //Bia Auto Remove Player
+                console.log("selectedWorker toTile", selectedWorkerPos, tile)
+                const removePlayerTile = getNextTileInSameDirection(selectedWorkerPos.tile, tile, tileData)
+                const workerToRemove = removePlayerTile && tileData[TILES.indexOf(removePlayerTile)].worker
+                console.log("removePlayerTile workerToRemove", removePlayerTile, workerToRemove)
+                if(removePlayerTile && workerToRemove && 
+                    selectedWorker?.toUpperCase() !== workerToRemove.toUpperCase()){
+                        dispatch(addCurrentGameAction((
+                            {tile:removePlayerTile, worker:workerToRemove} as RemoveWorker)));
+                        const workerPos = workerPositions.find(w => w.worker === workerToRemove )
+                        workerPos && dispatch(removeWorker(workerPos))
                 }
             }
             // dispatch(clearIndicators())

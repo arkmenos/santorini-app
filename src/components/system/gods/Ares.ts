@@ -1,7 +1,5 @@
 import { ARES_VALID_REMOVE, Build, DOMES, Move, Player, RemoveBuilding, Tile, TILE_ADJACENCY, TileData, TILES, Turn, Worker } from "../../../types/Types";
 import Mortal from "../Mortal";
-import Restriction from "../restrictions/Restrictions";
-
 
 class Ares extends Mortal {
     constructor() {
@@ -9,7 +7,7 @@ class Ares extends Mortal {
         this.setIdentifier("XII")
     }
 
-    protected validateAresActions(turn: Turn, turnCount: number, playerCount:number,
+    protected validateActions(turn: Turn, turnCount: number, playerCount:number,
         tileData: TileData[], workerPositionsMap: Map<Worker, Tile>){
         if(turnCount <= 2 || (turnCount === 3 && playerCount === 3)){
             if(turn.gameActions.length !== 2) throw new Error("Must place 2 workers on board this turn")
@@ -73,7 +71,7 @@ class Ares extends Mortal {
     }
 
 
-    protected performRemoveBlockAction (turn: Turn, tileData: TileData[]){
+    private performRemoveBlockAction (turn: Turn, tileData: TileData[]){
         const tile = (turn.gameActions[2] as RemoveBuilding).tile
         const building = tileData[TILES.indexOf(tile)].buildings
         if(building){
@@ -84,12 +82,9 @@ class Ares extends Mortal {
     }
     
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 
-        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number,
-        restrictions: Restriction[]){
-        
-        this.checkRestrictions(turn, tileData,restrictions)        
+        workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){              
 
-        this.validateAresActions(turn, turnCount, playerCount, tileData, workerPositionsMap)
+        this.validateActions(turn, turnCount, playerCount, tileData, workerPositionsMap)
         let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
             playerTurn, turnCount, playerCount)
         
