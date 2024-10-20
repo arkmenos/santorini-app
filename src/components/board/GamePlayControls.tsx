@@ -14,7 +14,7 @@ interface GamePlaycontrolsProp {
     setSelectedWorker: (worker: Worker|null) => void,
     setCanUseSpecialPower: (atlas: boolean) => void,
 }
-function GamePlayControls({player, onTurnEnd = () => true, 
+function GamePlayControls({player, onTurnEnd = () => true, moveIndicators,
     canUseSpecialPower, setMoveIndicators, setSelectedWorker, setCanUseSpecialPower}:GamePlaycontrolsProp ){
 
     const canBuild = useAppSelector((state) => state.boardState.canBuild)
@@ -66,7 +66,7 @@ function GamePlayControls({player, onTurnEnd = () => true,
         dispatch(undoTurn())
         dispatch(clearCurrentTurnData()) 
         // setPowerButton("power-btn")
-        setMoveIndicators([])
+        setMoveIndicators(moveIndicators)
         setSelectedWorker(null)
         setCanUseSpecialPower(false)
     }

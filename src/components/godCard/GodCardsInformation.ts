@@ -100,7 +100,7 @@ export const ChaosCard: GodCardInfo = {
 
 export const CharonCard: GodCardInfo = {
     name : "Charon",
-    description : "",
+    description : "Your Move: Before your Worker moves, you may force a neighboring opponent Worker to the space directly on the other side of your Worker, if that space is unoccupied.",
     flavorText : "Ferryman to the Underworld",
     identifier : "XV"
 };

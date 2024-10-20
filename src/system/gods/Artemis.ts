@@ -1,4 +1,5 @@
-import { Build, Move, Player, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
+
+import { Turn, Move, Build, Player, TileData, Tile, TILES, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
 
 class Artemis extends Mortal {

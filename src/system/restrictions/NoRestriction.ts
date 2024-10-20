@@ -1,5 +1,6 @@
-import { TileData, Turn } from "../../../types/Types";
-import Restriction from "./Restrictions";
+
+import { Turn, TileData } from "../../types/Types";
+import Restriction from "./Restriction";
 
 class NoRestriction extends Restriction{
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

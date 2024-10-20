@@ -1,4 +1,5 @@
-import { Build, Move, Tile, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
+
+import { Turn, Move, Build, TileData, VALID_BUILDS, Tile, TILES, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
 
 

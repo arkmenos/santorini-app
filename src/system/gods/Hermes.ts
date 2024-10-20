@@ -1,5 +1,6 @@
-import { Build, Building, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
-import { isMoveSameLevel } from "../../../Utility/Utility";
+
+import { Turn, TileData, Move, Build, Player, TILES, Building, TILE_ADJACENCY, VALID_BUILDS, Tile, Worker } from "../../types/Types";
+import { isMoveSameLevel } from "../../Utility/Utility";
 import Mortal from "../Mortal";
 
 class Hermes extends Mortal {

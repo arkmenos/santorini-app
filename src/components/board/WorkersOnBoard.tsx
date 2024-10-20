@@ -5,8 +5,8 @@ import { FemaleRed } from "../worker/FemaleRed.js";
 import { MaleRed } from "../worker/MaleRed.js";
 import { FemaleYellow } from "../worker/FemaleYellow.js";
 import { MaleYellow } from "../worker/MaleYellow.js";
-import { Building, Move, PlayerInfo, POSITIONS, Tile, TILE_ADJACENCY, TILES, VALID_MOVEMENTS, Worker, WorkerPostion } from "../../types/Types.js";
-import { getWorkerYPositionIndicator } from "../../Utility/Utility.js";
+import { Building, DOMES, Move, PlayerInfo, POSITIONS, Tile, TILE_ADJACENCY, TILES, VALID_MOVEMENTS, Worker, WorkerPostion } from "../../types/Types.js";
+import { getWorkerYPositionIndicator, isTileAdjacentTo } from "../../Utility/Utility.js";
 import { addCurrentGameAction, setCanBuild,  setWorkerPosition } from "../../feature/boardstate-slice.js";
 import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../app/hooks.js";
@@ -87,8 +87,42 @@ const WorkersOnBoard = ({isTurn, player, moveIndicators,moveWorkerIndicators,
         }
         if(isTurn && ((turnCount > 2 && playerCount === 2) || (playerCount === 3 && turnCount > 3))){        
             if(!workerPos.tile) return
-
+            console.log("Player WorkerPos", player.type, workerPos.worker)
             console.log("MoveIndicator old new", moveIndicators, moveWorkerIndicators)
+            if(player.type !== workerPos.worker?.toUpperCase()){
+                //Charon force move opponent worker
+                if(player.identifier === "XV"){
+                    const charonWorkers = []
+                    const c1 = workerPositions.find(w => w.worker === player.type?.toLowerCase())
+                    const c2 = workerPositions.find(w => w.worker === player.type?.toUpperCase())
+                    c1 && charonWorkers.push(c1)
+                    c2 && charonWorkers.push(c2)
+                    const validForceMoveTiles:Tile[] = [];
+                    // const tempPositions:WorkerPostion[] =[]
+                    charonWorkers.forEach(w => {
+                        if(workerPos.tile && w.tile && isTileAdjacentTo(workerPos.tile, w.tile)){
+                            const destTile = getNextTileInSameDirection(workerPos.tile,w.tile, tileData)
+                            if(destTile){
+                                const tileInfo = tileData[TILES.indexOf(destTile)]
+                                if(tileInfo && tileInfo.buildings && !DOMES.includes(tileInfo.buildings) 
+                                    && !tileInfo.worker){
+                                    validForceMoveTiles.push(destTile)
+                                    // const newPosition = JSON.parse(JSON.stringify(POSITIONS[TILES.indexOf(destTile)]));
+                                    // newPosition[1] = getWorkerYPositionIndicator(tileInfo.buildings) 
+                                    // tempPositions.push({worker:workerPos.work})
+                                }
+                            }
+                        }
+                    })
+
+                    setMoveWorkerIndicators([])
+                    setMoveIndicators(validForceMoveTiles)
+                    setSelectedWorker(workerPos.worker ? workerPos.worker : null)
+                }
+                
+                return
+                
+            }
             const workerBeingSwapped = moveWorkerIndicators.find(w => {return w.worker === workerPos.worker})
             const selectedWorkerToSwap = workerPositions.find(w => {return w.worker === selectedWorker})
             // Apollo worker Swap

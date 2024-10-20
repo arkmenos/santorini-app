@@ -1,8 +1,9 @@
-import { Move, TileData, Turn } from "../../../types/Types";
-import { isMoveAscending } from "../../../Utility/Utility";
-import Restriction from "./Restrictions";
 
-class AthenaRestrictions extends Restriction {     
+import { Turn, TileData, Move } from "../../types/Types";
+import { isMoveAscending } from "../../Utility/Utility";
+import Restriction from "./Restriction";
+
+class AthenaRestriction extends Restriction {     
      constructor (inPlay:boolean, active:boolean){
         super(inPlay, active)
         this.setGodIdentifier("III")
@@ -21,4 +22,4 @@ class AthenaRestrictions extends Restriction {
     }
 }
 
-export default AthenaRestrictions
+export default AthenaRestriction

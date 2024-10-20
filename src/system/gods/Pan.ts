@@ -1,4 +1,5 @@
-import { Move, TileData, TILES, Turn } from "../../../types/Types";
+
+import { Turn, TileData, Move, TILES } from "../../types/Types";
 import Mortal from "../Mortal";
 
 class Pan extends Mortal {

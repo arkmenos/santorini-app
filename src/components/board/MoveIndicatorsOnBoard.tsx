@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { Building, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
+import { Building, ForcedMove, L_BLOCK_Y_POS, M_BLOCK_Y_POS, 
     Move, 
     PlayerInfo, 
     POSITIONS, RemoveWorker, S_BLOCK_Y_POS, Tile, TILES, Worker, WorkerPostion } from "../../types/Types"
@@ -137,8 +137,15 @@ function MoveIndicatorOnBoard ({isTurn, player, moveIndicators, moveWorkerIndica
             const newPos = [...position]
             const toTileBlock = tileData[TILES.indexOf(tile)].buildings
             if(toTileBlock) newPos[1] = getWorkerYPositionIndicator(toTileBlock)
-            if(selectedWorkerPos.worker) dispatch(addCurrentGameAction((
-                {from: previousPos.tile, to: tile, worker:selectedWorkerPos.worker}) as Move))
+            if(selectedWorkerPos.worker) {
+                if(player.identifier === "XV" && player.type !== selectedWorkerPos.worker.toUpperCase()){
+                    dispatch(addCurrentGameAction((
+                        {origin: previousPos.tile, destination: tile, worker:selectedWorkerPos.worker}) as ForcedMove))
+                }else {
+                    dispatch(addCurrentGameAction((
+                        {from: previousPos.tile, to: tile, worker:selectedWorkerPos.worker}) as Move))
+                }
+            }
             dispatch(setWorkerPosition({worker:selectedWorkerPos.worker, position:newPos, tile: tile}))
 
             const workerBeingSwapped = moveWorkerIndicators.find (w => {return w.tile === tile})           

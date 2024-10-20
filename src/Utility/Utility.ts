@@ -1,4 +1,4 @@
-import { Building, Move, PLAYER_POS_FIRST_LEVEL, PLAYER_POS_GROUND, PLAYER_POS_SECOND_LEVEL, PLAYER_POS_THIRD_LEVEL, Tile, TileData, TILES } from "../types/Types";
+import { Building, Move, PLAYER_POS_FIRST_LEVEL, PLAYER_POS_GROUND, PLAYER_POS_SECOND_LEVEL, PLAYER_POS_THIRD_LEVEL, Tile, TILE_ADJACENCY, TileData, TILES } from "../types/Types";
 
 export const getNextTileInSameDirection = (fromTile: Tile | undefined, 
     toTile: Tile | undefined, tileData: TileData[]) =>{ 
@@ -127,3 +127,9 @@ export function getWorkerYPositionIndicator(block: Building): number {
     return result;
 }
 
+export function isTileAdjacentTo(firstTile: Tile, secondTile:Tile):boolean {
+    if(!firstTile || !secondTile) return false
+    if(TILE_ADJACENCY[TILES.indexOf(firstTile)].includes(TILES.indexOf(secondTile)))
+        return true;
+    return false
+}

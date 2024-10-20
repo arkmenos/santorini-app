@@ -1,4 +1,5 @@
-import { Build, Building, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_MOVEMENTS, Worker } from "../../../types/Types";
+
+import { Turn, Move, Build, TileData, Player, TILE_ADJACENCY, TILES, Building, VALID_MOVEMENTS, Tile, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
 
 class Apollo extends Mortal {

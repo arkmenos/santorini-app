@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import SantoriniBoard from "../board/SantoriniBoard"
-import Santorini from "../system/Santorini"
+import Santorini from "../../system/Santorini"
 import { GameProp, Move, Player, Turn } from "../../types/Types"
 import { Button, Message, Modal, useToaster } from "rsuite"
 import { socket } from "../../socket/socket"

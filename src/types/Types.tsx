@@ -24,7 +24,7 @@ export const GODIDENTIFIERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' ,
     , 'XXI' , 'XXII' , 'XXIII' , 'XXIV' , 'XXV' , 'XXVI' , 'XXVII' , 'XXVIII' , 'XXIX' , 'XXX', '-'];
 export const TWO_PLAYER_ONLY:GodIdentifier[] = ['XI', 'XVI', 'XVII'];
 export const UNAVAILABLE_POWERS:GodIdentifier[] = ['XIV', 'XXV'];
-export const AVAILABLE_POWERS:GodIdentifier[] = ['XII', 'XIII','XVI','XXX'];
+export const AVAILABLE_POWERS:GodIdentifier[] = ['XII', 'XIII','XV','XVI', 'XX', 'XXX'];
 export const SIMPLE_GOD_POWERS:GodIdentifier[] = ['I' , 'II' , 'III' , 'IV' , 'V' , 'VI' , 'VII' , 'VIII' , 'IX' , 'X']
 
 export const MAX_L_BLOCKS = 22;
@@ -85,11 +85,17 @@ export type RemoveWorker = {
     worker: Worker,
 }
 
+export type ForcedMove = {
+    origin: Tile,
+    destination: Tile,
+    worker: Worker
+}
+
 export type Turn = {
     gameActions: GameAction[]
 }
 
-export type GameAction = Move | Build | RemoveBuilding | RemoveWorker
+export type GameAction = Move | Build | RemoveBuilding | RemoveWorker | ForcedMove
 
 export type GamePlayer = Player | 'S'
 
@@ -105,6 +111,13 @@ export interface GameProp{
     opponents: PlayerInfo[],
 }
 
+export interface TurnResult {
+    tileData: TileData[];
+    workerPositionsMap: Map<Worker, Tile>;
+    workerPositions: Tile[];
+    isPrimaryWinConditionMet: boolean;
+    isSecondaryWinConditionMet?: boolean;
+  }
 export type PlayMode =  "No Powers" | "Pick Powers" | "Random Powers";
 export const PLAY_MODES = ["No Powers", "Pick Powers", "Random Powers"]
 

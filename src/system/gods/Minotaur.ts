@@ -1,5 +1,6 @@
-import { Build, DOMES, Move, Player, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
-import { getNextTileInSameDirection } from "../../../Utility/Utility";
+
+import { Turn, TileData, Move, TILES, DOMES, Build, Tile, Player, Worker } from "../../types/Types";
+import { getNextTileInSameDirection } from "../../Utility/Utility";
 import Mortal from "../Mortal";
 
 class Minotaur extends Mortal {

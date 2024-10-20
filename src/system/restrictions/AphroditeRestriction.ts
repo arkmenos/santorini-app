@@ -1,9 +1,10 @@
-import { Turn, TileData, Move, Player, Worker, Tile, TILE_ADJACENCY, TILES } from "../../../types/Types";
+
+import { Turn, TileData, Player, Tile, Move, TILE_ADJACENCY, TILES, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
-import Restriction from "./Restrictions";
+import Restriction from "./Restriction";
 
 
-class AphroditeRestrictions extends Restriction {
+class AphroditeRestriction extends Restriction {
     constructor(inPlay: boolean, active:boolean){
         super(inPlay, active)
         this.setGodIdentifier("XI")
@@ -67,4 +68,4 @@ class AphroditeRestrictions extends Restriction {
     }
 }
 
-export default AphroditeRestrictions
+export default AphroditeRestriction

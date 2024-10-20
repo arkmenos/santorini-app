@@ -1,13 +1,14 @@
-import { Move, Player, Tile, TileData, Turn, Worker } from "../../../types/Types";
-import { isMoveAscending } from "../../../Utility/Utility";
+
+import { Turn, TileData, Tile, Player, Move, Worker } from "../../types/Types";
+import { isMoveAscending } from "../../Utility/Utility";
 import Mortal from "../Mortal";
-import AthenaRestrictions from "../restrictions/AthenaRestrictions";
+import AthenaRestriction from "../restrictions/AthenaRestriction";
 
 class Athena extends Mortal{
     constructor(){
         super();
         this.setIdentifier("III");
-        this.setRestriction(new AthenaRestrictions(true, false));
+        this.setRestriction(new AthenaRestriction(true, false));
     }
     
     public takeTurn(turn: Turn, tileData: TileData[], workerPositionsMap: Map<Worker, Tile>, 

@@ -1,4 +1,5 @@
-import { ARES_VALID_REMOVE, Build, DOMES, Move, Player, RemoveBuilding, Tile, TILE_ADJACENCY, TileData, TILES, Turn, Worker } from "../../../types/Types";
+
+import { Turn, TileData, Tile, Move, Build, TILES, RemoveBuilding, DOMES, TILE_ADJACENCY, ARES_VALID_REMOVE, Player, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
 
 class Ares extends Mortal {

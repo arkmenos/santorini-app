@@ -1,5 +1,6 @@
-import { Build, Move, Player, Tile, TileData, TILES, Turn, VALID_BUILDS, Worker } from "../../../types/Types";
-import { isMoveAscending } from "../../../Utility/Utility";
+
+import { Turn, TileData, Move, Build, TILES, Player, Tile, VALID_BUILDS, Worker } from "../../types/Types";
+import { isMoveAscending } from "../../Utility/Utility";
 import Mortal from "../Mortal";
 
 class Prometheus extends Mortal {

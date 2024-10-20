@@ -2,31 +2,27 @@ import {  START,  Worker,  WORKERS,  BLOCKS,  DOMES,  TILES,  Tile,  MAX_DOMES, 
   MAX_M_BLOCKS,  MAX_S_BLOCKS,  TileData,  Block,  Turn,  Move,  Building,  
   TILE_ADJACENCY,  VALID_MOVEMENTS,  Player,  PLAYERS,  GODIDENTIFIERS,
   GodIdentifier,
-  } from "../../types/Types";
+  TurnResult,
+  PERIMETER_TILES,
+  } from "../types/Types";
 import Apollo from "./gods/Apollo";
 import Ares from "./gods/Ares";
 import Artemis from "./gods/Artemis";
 import Athena from "./gods/Athena";
 import Atlas from "./gods/Atlas";
 import Bia from "./gods/Bia";
+import Charon from "./gods/Charon";
 import Chronus from "./gods/Chronus";
 import Demeter from "./gods/Demeter";
 import Hephaestus from "./gods/Hephaestus";
+import Hera from "./gods/Hera";
 import Hermes from "./gods/Hermes";
 import Minotaur from "./gods/Minotaur";
 import Pan from "./gods/Pan";
 import Prometheus from "./gods/Prometheus";
 import Zeus from "./gods/Zeus";
 import Mortal from "./Mortal";
-import Restriction from "./restrictions/Restrictions";
-
-interface TurnResult {
-  tileData: TileData[];
-  workerPositionsMap: Map<Worker, Tile>;
-  workerPositions: Tile[];
-  isPrimaryWinConditionMet: boolean;
-  isSecondaryWinConditionMet?: boolean;
-}
+import Restriction from "./restrictions/Restriction";
 
 class Santorini {
   private notation: string;
@@ -189,8 +185,12 @@ class Santorini {
           tempWorkerPositionsMap.delete(this.playerTurn)
           tempWorkerPositionsMap.delete(this.playerTurn.toLowerCase() as Worker)
           // console.log("Update tile after removing player ", tempTileData, tempWorkerPositionsMap)
-          if(this.playerPowers[this.playerTurn.charCodeAt(0) - 88] instanceof Chronus){
-            this.isChronusInPlay = false;
+          const pPower = this.playerPowers[this.playerTurn.charCodeAt(0) - 88]
+          if(pPower instanceof Chronus ||pPower instanceof Hera){
+              if(pPower instanceof Chronus) this.isChronusInPlay = false;
+             
+              pPower.setActive(false) 
+              this.restrictions = this.restrictions.filter(res => res !== pPower.getRestriction())
           }
           const newSAN = this.createNewSAN(tempTileData, tempWorkerPositionsMap)
           this.load(newSAN)
@@ -203,11 +203,11 @@ class Santorini {
     }
     
     let mortal: Mortal;
+    const playerIndex = this.playerTurn.charCodeAt(0) - 88
     if(this.playerPowers.length === 1){
       mortal = this.playerPowers[0];
     }else{
-      const playerIndex = this.playerTurn.charCodeAt(0) - 88
-      mortal = this.playerPowers[playerIndex]
+       mortal = this.playerPowers[playerIndex]
     }
     
     this.restrictions.forEach(res => {
@@ -223,6 +223,25 @@ class Santorini {
     tempWorkerPositionsMap = mAction.workerPositionsMap
     tempWorkerPositions = mAction.workerPositions
  
+    let heraPower, heraIndex
+    this.playerPowers.forEach((p,i) => {
+      if(p.isActive() && p.getIdentifier() === "XX"){
+        heraPower = p
+        heraIndex = i
+      }
+    })
+
+    // console.log("Hera", heraPower, heraIndex, playerIndex)
+    if(heraPower && mAction.isPrimaryWinConditionMet && playerIndex !== heraIndex){
+      // console.log("check hera power")
+      const lastMoveAction = turn.gameActions.slice().reverse().find(m => {
+        if((m as Move).to && (m as Move).from && (m as Move).worker )
+          return m        
+      })
+      // console.log("lastMoveAction", lastMoveAction)
+      if(lastMoveAction  && PERIMETER_TILES.includes((lastMoveAction as Move).to )) 
+        mAction.isPrimaryWinConditionMet = false;
+    }
 
     //Check primary win condition
     if(mAction.isPrimaryWinConditionMet || mAction.isSecondaryWinConditionMet){
@@ -744,9 +763,15 @@ class Santorini {
           case "XIII":
             this.playerPowers.push(new Bia())
               break;
+          case "XV":
+            this.playerPowers.push(new Charon())
+              break;
           case "XVI":
             this.playerPowers.push( new Chronus())
             this.isChronusInPlay = true;
+            break;
+          case "XX":
+            this.playerPowers.push(new Hera())
             break;
           case "XXX":
             this.playerPowers.push(new Zeus())

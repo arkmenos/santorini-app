@@ -1,4 +1,6 @@
-import { GodIdentifier, Player, Tile, TileData, Turn, Worker } from "../../../types/Types";
+
+
+import { GodIdentifier, Turn, TileData, Player, Tile, Worker } from "../../types/Types";
 import Mortal from "../Mortal";
 
 abstract class Restriction {

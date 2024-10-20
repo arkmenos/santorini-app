@@ -1,5 +1,6 @@
-import { Build, Move, Player, RemoveWorker, Tile, TileData, TILES, Turn, Worker } from "../../../types/Types";
-import { getNextTileInSameDirection } from "../../../Utility/Utility";
+
+import { Turn, TileData, Tile, Move, Build, RemoveWorker, TILES, Player, Worker, TurnResult } from "../../types/Types";
+import { getNextTileInSameDirection } from "../../Utility/Utility";
 import Mortal from "../Mortal";
 
 
@@ -109,24 +110,28 @@ class Bia extends Mortal {
         workerPositions: Tile[], playerTurn: Player, turnCount: number, playerCount: number){              
 
         this.validateActions(turn, turnCount, playerCount, tileData, workerPositionsMap)
-        let turnData = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
+        let turnData:TurnResult = this.performMoveAction(turn, tileData, workerPositionsMap, workerPositions,
             playerTurn, turnCount, playerCount)
         
         if(turnData.isPrimaryWinConditionMet){
             return turnData;
         }
 
+        if(turn.gameActions.length === 3) {
+            const result = this.performRemoveWorkerAction(turn, turnData.tileData, workerPositionsMap);
+            // turnData.tileData = result.tileData
+            // turnData.workerPositionsMap = result.workerPositionsMap
+            turnData = {...turnData, ...result}
+            turnData = {...turnData, isSecondaryWinConditionMet:this.isSecondaryWinConditionMet(turn, 
+                tileData, workerPositionsMap, playerTurn)}
+            // turnData.isSecondaryWinConditionMet =  isSecondaryWinConditionMet:this.isSecondaryWinConditionMet(turn, 
+            //     tileData, workerPositionsMap, playerTurn)
+            // return newTurnData
+        }
         turnData = this.performBuildAction(turn, turnData.tileData, turnData.workerPositionsMap,
             turnData.workerPositions, turnCount, playerCount);
 
-        if(turn.gameActions.length === 3) {
-            const result = this.performRemoveWorkerAction(turn, tileData, workerPositionsMap);
-            turnData.tileData = result.tileData
-            turnData.workerPositionsMap = result.workerPositionsMap
-            const newTurnData = {...turnData, isSecondaryWinConditionMet:this.isSecondaryWinConditionMet(turn, 
-                tileData, workerPositionsMap, playerTurn)}
-            return newTurnData
-        }
+        
         console.log("tileData after remove worker", tileData, turn.gameActions.length)
         
         return turnData;

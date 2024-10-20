@@ -1,12 +1,14 @@
 
-import { Build, Building, GodIdentifier, Move, Player, Tile, TILE_ADJACENCY, TileData, TILES, Turn, VALID_BUILDS, VALID_MOVEMENTS, Worker } from "../../types/Types";
+
+import { GodIdentifier, Turn, TileData, Tile, Move, Build, Player, TILE_ADJACENCY, TILES, Building, VALID_MOVEMENTS, VALID_BUILDS, Worker } from "../types/Types";
 import NoRestriction from "./restrictions/NoRestriction";
-import Restriction from "./restrictions/Restrictions";
+import Restriction from "./restrictions/Restriction";
 
 class Mortal {
 
     private identifier: GodIdentifier | null = null;
-    private restriction: Restriction = new NoRestriction();  
+    private restriction: Restriction = new NoRestriction();
+    private active: boolean = true;  
     
     constructor(){   
     }
@@ -27,8 +29,16 @@ class Mortal {
         this.restriction = restriction
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public setActive(isActive:boolean){
+        this.active = isActive
+    }
+
+    public isActive():boolean {
+        return this.active
+    }
+
     protected validateActions(turn: Turn, turnCount: number, playerCount:number,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _tileData?:TileData[], _workerPositionsMap?: Map<Worker, Tile>){             
        
         const moveAction = turn.gameActions[0] as Move
@@ -212,7 +222,7 @@ class Mortal {
         turnData = this.performBuildAction(turn, turnData.tileData, turnData.workerPositionsMap,
             turnData.workerPositions, turnCount, playerCount);
 
-        if(this.isSecondaryWinConditionMet(turn, tileData, workerPositionsMap, playerTurn)){
+        if(this.isSecondaryWinConditionMet(turn, turnData.tileData, workerPositionsMap, playerTurn)){
             const newTurnData = {...turnData, isSecondaryWinConditionMet: true}
 
             return newTurnData

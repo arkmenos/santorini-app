@@ -1,11 +1,11 @@
 import Mortal from "../Mortal";
-import AphroditeRestrictions from "../restrictions/AphroditeRestrictions";
+import AphroditeRestriction from "../restrictions/AphroditeRestriction";
 
 class Aphrodite extends Mortal{
     constructor(){
         super();
         this.setIdentifier("XI");
-        this.setRestriction( new AphroditeRestrictions(true, true))
+        this.setRestriction( new AphroditeRestriction(true, true))
     }
 }
 
